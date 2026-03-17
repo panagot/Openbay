@@ -5,7 +5,7 @@ export function FooterBar() {
     <footer className="site-footer">
       <div className="footer-inner">
         <div className="left">
-          <div className="tag">Powering the EVolution on X1 EcoChain</div>
+          <div className="tag">EV DePIN on X1 EcoChain</div>
           <div className="muted">Virtual DeCharge World — DePIN for low-energy EV infrastructure on X1.</div>
         </div>
         <nav className="links">

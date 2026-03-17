@@ -96,7 +96,7 @@ export function WalletBar() {
           <ChargeIcon />
           <span>Virtual DeCharge World</span>
         </div>
-        <div className="slogan">Powering the EVolution on X1 EcoChain</div>
+        <div className="slogan">EV DePIN on X1 EcoChain</div>
       </div>
       <div className="actions">
         <Link to="/about"><button className="about-btn">What is this?</button></Link>

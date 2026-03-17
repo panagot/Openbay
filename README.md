@@ -1,6 +1,6 @@
-# Virtual DeCharge World on X1 EcoChain ⚡
+# DeCharge World · X1 EcoChain ⚡
 
-This is the **X1 EcoChain** version of Virtual DeCharge World — a DePIN dApp for EV charging, built for the [X1 EcoChain](https://x1.eco) ecosystem (low-energy, EVM-compatible blockchain).
+DePIN dApp for EV charging on [X1 EcoChain](https://x1.eco) (low-energy, EVM-compatible).
 
 ## Concept
 
@@ -45,6 +45,17 @@ npm run dev
 ```
 
 Open **http://localhost:5173** in your browser.
+
+### Deploy on Vercel
+
+1. Go to [vercel.com](https://vercel.com) → **Add New** → **Project** → Import **panagot/Powering-the-EVolution-on-X1-EcoChain** (or your fork).
+2. **Framework Preset:** Vite (or leave Auto).
+3. **Root Directory:** `.` (leave default).
+4. **Build Command:** `npm run build` · **Output Directory:** `dist`.
+5. (Optional) **Environment Variables:** add `VITE_GOOGLE_MAPS_API_KEY` for real maps.
+6. **Deploy.** If build fails, set **Node.js Version** to 18.x in Project Settings → General.
+
+**Shorter repo name on GitHub:** Repo → **Settings** → **General** → **Repository name** → change to e.g. `DeCharge-X1` or `vdw-x1` → **Rename**. Then in Vercel, reconnect the repo or redeploy (Vercel will follow the new name).
 
 ## Features
 
