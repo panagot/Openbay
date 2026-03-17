@@ -148,7 +148,7 @@ export function GoogleMapsView() {
                         {active && (
                           <div style={{ marginTop: 6 }}>
                             <a
-                              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Charging at ${selected.name} • ${kwh} kWh • ${costPts} POINTS • #DePIN #X1EcoChain @X1_EcoChain`)}`}
+                              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Charging at ${selected.name} • ${kwh} kWh • ${costPts} POINTS • #DePIN #X1EcoChain x1ecochain.com`)}`}
                               target="_blank" rel="noreferrer"
                             >Share to X</a>
                           </div>

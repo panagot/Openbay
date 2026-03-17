@@ -7,8 +7,8 @@
 
 // Replace with official X1 chain ID and RPC when published by X1 EcoChain
 const X1_CHAIN_ID = parseInt(import.meta.env.VITE_X1_CHAIN_ID || '2024', 10);
-const X1_RPC = import.meta.env.VITE_X1_RPC || 'https://rpc.x1.eco';
-const X1_EXPLORER = import.meta.env.VITE_X1_EXPLORER || 'https://explorer.x1.eco';
+const X1_RPC = import.meta.env.VITE_X1_RPC || 'https://testnet.x1ecochain.com';
+const X1_EXPLORER = import.meta.env.VITE_X1_EXPLORER || 'https://maculatus-scan.x1eco.com/';
 
 async function ensureX1() {
   if (!window.ethereum) return;

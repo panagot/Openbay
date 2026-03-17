@@ -1,10 +1,10 @@
 # DeCharge World · X1 EcoChain ⚡
 
-DePIN dApp for EV charging on [X1 EcoChain](https://x1.eco) (low-energy, EVM-compatible).
+DePIN dApp for EV charging on [X1 EcoChain](https://x1ecochain.com/) (low-energy, EVM-compatible).
 
 ## Concept
 
-**Virtual DeCharge World** is an operating system for independent EV charger owners. It turns parking spots and garages into revenue-generating charging nodes with chain identity (DID), verifiable sessions, and P2P payments. This repo targets **X1 EcoChain** for the [X1 EcoChain Ecosystem Grants Program](https://x1.eco).
+**Virtual DeCharge World** is an operating system for independent EV charger owners. It turns parking spots and garages into revenue-generating charging nodes with chain identity (DID), verifiable sessions, and P2P payments. This repo targets **X1 EcoChain** for the [X1 EcoChain Ecosystem Grants Program](https://x1ecochain.com/) (Grant Program $5M).
 
 - **Real-time charging sessions**: Start/stop on virtual plots, per-second settlement, POINTS
 - **Map**: Google Maps heatmap and markers (or mock), session cards
@@ -17,7 +17,7 @@ DePIN dApp for EV charging on [X1 EcoChain](https://x1.eco) (low-energy, EVM-com
 - **Digital identity (DID)**: One identity per charger for discovery and trust
 - **DePIN**: Coordination layer for decentralized EV charging
 
-See [X1 EcoChain](https://x1.eco), [X1 X](https://x.com/X1_EcoChain).
+See [X1 EcoChain](https://x1ecochain.com/), [Ecosystem](https://ecosystem.x1ecochain.com/).
 
 ## Quick Start
 
@@ -52,7 +52,11 @@ Open **http://localhost:5173** in your browser.
 2. **Framework Preset:** Vite (or leave Auto).
 3. **Root Directory:** `.` (leave default).
 4. **Build Command:** `npm run build` · **Output Directory:** `dist`.
-5. (Optional) **Environment Variables:** add `VITE_GOOGLE_MAPS_API_KEY` for real maps.
+5. **Google Maps on Vercel:** In the project → **Settings** → **Environment Variables** → add:
+   - **Name:** `VITE_GOOGLE_MAPS_API_KEY`
+   - **Value:** *(use the same key as in DeCharge-peaq / DeCharge-wmc — from your `.env` there)*
+   - **Environment:** Production (and Preview if you want maps on branch deploys)
+   Then **Redeploy** (Deployments → … → Redeploy) so the build picks up the key. Without this, the live site shows the mock map.
 6. **Deploy.** If build fails, set **Node.js Version** to 18.x in Project Settings → General.
 
 **Shorter repo name on GitHub:** Repo → **Settings** → **General** → **Repository name** → change to e.g. `DeCharge-X1` or `vdw-x1` → **Rename**. Then in Vercel, reconnect the repo or redeploy (Vercel will follow the new name).

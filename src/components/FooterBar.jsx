@@ -9,8 +9,8 @@ export function FooterBar() {
           <div className="muted">Virtual DeCharge World — DePIN for low-energy EV infrastructure on X1.</div>
         </div>
         <nav className="links">
-          <a href="https://x1.eco" target="_blank" rel="noreferrer">X1 EcoChain</a>
-          <a href="https://x.com/X1_EcoChain" target="_blank" rel="noreferrer">X1 X</a>
+          <a href="https://x1ecochain.com/" target="_blank" rel="noreferrer">X1 EcoChain</a>
+          <a href="https://ecosystem.x1ecochain.com/" target="_blank" rel="noreferrer">Ecosystem</a>
         </nav>
       </div>
     </footer>

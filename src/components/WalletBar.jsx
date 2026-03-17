@@ -36,7 +36,7 @@ async function connectMetaMask() {
           chainName: 'X1 EcoChain',
           nativeCurrency: { name: 'X1', symbol: 'X1', decimals: 18 },
           rpcUrls: [X1_RPC],
-          blockExplorerUrls: [import.meta.env.VITE_X1_EXPLORER || 'https://explorer.x1.eco'],
+          blockExplorerUrls: [import.meta.env.VITE_X1_EXPLORER || 'https://maculatus-scan.x1eco.com/'],
         }],
       });
     } else throw e;

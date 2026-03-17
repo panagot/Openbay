@@ -24,8 +24,8 @@ export function ChargerPanel() {
       <h3>Your Holdings</h3>
       <div className="panel-actions">
         <button className="secondary" onClick={() => { localStorage.clear(); location.reload(); }}>Reset World</button>
-        <a className="secondary" href="https://x1.eco" target="_blank" rel="noreferrer">X1 EcoChain</a>
-        <a className="secondary" href="https://x.com/X1_EcoChain" target="_blank" rel="noreferrer">X1 X</a>
+        <a className="secondary" href="https://x1ecochain.com/" target="_blank" rel="noreferrer">X1 EcoChain</a>
+        <a className="secondary" href="https://ecosystem.x1ecochain.com/" target="_blank" rel="noreferrer">Ecosystem</a>
       </div>
       <div className="stats">
         <div className="stat"><div className="label">POINTS</div><div className="value">{myBal.points}</div></div>

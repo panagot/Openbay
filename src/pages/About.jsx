@@ -52,8 +52,8 @@ export function About() {
               <li>EVM-compatible: MetaMask, X1 EcoChain, $X1</li>
             </ul>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <a className="secondary" href="https://x1.eco" target="_blank" rel="noreferrer">X1 EcoChain</a>
-              <a className="secondary" href="https://x.com/X1_EcoChain" target="_blank" rel="noreferrer">X1 X</a>
+              <a className="secondary" href="https://x1ecochain.com/" target="_blank" rel="noreferrer">X1 EcoChain</a>
+              <a className="secondary" href="https://ecosystem.x1ecochain.com/" target="_blank" rel="noreferrer">Ecosystem</a>
             </div>
           </div>
 
@@ -161,8 +161,8 @@ export function About() {
             <h3>Quick links</h3>
             <p className="muted">Live demo, docs, and grant program.</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <a className="secondary" href="https://x1.eco" target="_blank" rel="noreferrer">X1 EcoChain</a>
-              <a className="secondary" href="https://x.com/X1_EcoChain" target="_blank" rel="noreferrer">X1 X</a>
+              <a className="secondary" href="https://x1ecochain.com/" target="_blank" rel="noreferrer">X1 EcoChain</a>
+              <a className="secondary" href="https://ecosystem.x1ecochain.com/" target="_blank" rel="noreferrer">Ecosystem</a>
             </div>
           </div>
         </section>
