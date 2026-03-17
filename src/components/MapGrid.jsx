@@ -1,17 +1,17 @@
 import React, { useMemo, useState } from 'react';
 import { useWorldStore } from '../state/store.js';
-import { registerChargerOnWmc } from '../wmc/wmcService.js';
+import { registerChargerOnX1 } from '../x1/x1Service.js';
 
-function PlotCell({ plot, onMint, onDeploy, onStart, onStop, onRegisterWmc, isActive, user, wmcLoading }) {
+function PlotCell({ plot, onMint, onDeploy, onStart, onStop, onRegisterX1, isActive, user, x1Loading }) {
   const ownerShort = plot.owner ? `${plot.owner.slice(0, 4)}…${plot.owner.slice(-4)}` : null;
   const hasCharger = plot.charger;
-  const needsWmc = hasCharger && !plot.charger?.peaqDid && plot.charger?.owner === user?.pubkey;
-  const isRegistering = wmcLoading === plot.id;
+  const needsX1 = hasCharger && !plot.charger?.peaqDid && plot.charger?.owner === user?.pubkey;
+  const isRegistering = x1Loading === plot.id;
   return (
     <div className={['cell', plot.owner ? 'owned' : 'unowned', hasCharger ? 'has-charger' : '', isActive ? 'active' : ''].join(' ')}>
       <div className="coords">{plot.id}</div>
       {plot.owner && <div className="owner">{ownerShort}</div>}
-      {hasCharger && <div className="charger">⚡ {plot.charger.ratePerSec}/s {plot.charger.peaqDid && <span className="peaq-badge">WMC</span>}</div>}
+      {hasCharger && <div className="charger">⚡ {plot.charger.ratePerSec}/s {plot.charger.peaqDid && <span className="peaq-badge">X1</span>}</div>}
       <div className="actions">
         {!plot.owner && (
           <button onClick={() => onMint(plot.id)}>Mint (50)</button>
@@ -25,9 +25,9 @@ function PlotCell({ plot, onMint, onDeploy, onStart, onStop, onRegisterWmc, isAc
         {isActive && (
           <button className="secondary" onClick={() => onStop(plot.id)}>Stop</button>
         )}
-        {needsWmc && (
+        {needsX1 && (
           <div className="peaq-register-wrap">
-            <button className="peaq-btn" onClick={() => onRegisterWmc(plot)} disabled={isRegistering} title="Register this charger on World Mobile Chain. Verifiable identity — trust with drivers.">{isRegistering ? '…' : 'Register on WMC'}</button>
+            <button className="peaq-btn" onClick={() => onRegisterX1(plot)} disabled={isRegistering} title="Register this charger on X1 EcoChain. Verifiable identity — trust with drivers.">{isRegistering ? '…' : 'Register on X1'}</button>
             <span className="peaq-register-hint">Verifiable identity → trust with drivers</span>
           </div>
         )}
@@ -51,7 +51,7 @@ export function MapGrid() {
   const pushEvent = useWorldStore(s => s.pushEvent);
 
   const [error, setError] = useState('');
-  const [wmcLoading, setWmcLoading] = useState(null);
+  const [x1Loading, setX1Loading] = useState(null);
 
   const handle = (fn) => async (plotId) => {
     setError('');
@@ -59,12 +59,12 @@ export function MapGrid() {
     catch (e) { setError(e.message); pushEvent('error', e.message); }
   };
 
-  const handleRegisterWmc = async (plot) => {
+  const handleRegisterX1 = async (plot) => {
     if (!user || !plot.charger) return;
     setError('');
-    setWmcLoading(plot.id);
+    setX1Loading(plot.id);
     try {
-      const { didName, hash } = await registerChargerOnWmc({
+      const { didName, hash } = await registerChargerOnX1({
         chargerId: `charger-${plot.id}`,
         ownerAddress: user.pubkey,
         rate: plot.charger.ratePerSec,
@@ -72,12 +72,12 @@ export function MapGrid() {
         landRef: plot.id,
       });
       updateChargerPeaqDid(plot.id, didName);
-      pushEvent('peaq', `Registered on WMC: ${didName}. Verifiable identity — service history builds trust with drivers.`);
+      pushEvent('peaq', `Registered on X1: ${didName}. Verifiable identity — service history builds trust with drivers.`);
     } catch (e) {
       setError(e.message);
       pushEvent('error', e.message);
     } finally {
-      setWmcLoading(null);
+      setX1Loading(null);
     }
   };
 
@@ -101,9 +101,9 @@ export function MapGrid() {
             onDeploy={handle(deployCharger)}
             onStart={handle(startSession)}
             onStop={handle(stopSession)}
-            onRegisterWmc={handleRegisterWmc}
+            onRegisterX1={handleRegisterX1}
             isActive={!!sessions[plot.id]}
-            wmcLoading={wmcLoading}
+            x1Loading={x1Loading}
           />
         ))}
       </div>
@@ -111,7 +111,7 @@ export function MapGrid() {
         <span className="badge owned">Owned</span>
         <span className="badge has-charger">Charger</span>
         <span className="badge active">Active</span>
-        <span className="badge peaq">WMC</span>
+        <span className="badge peaq">X1</span>
       </div>
     </div>
   );

@@ -24,9 +24,8 @@ export function ChargerPanel() {
       <h3>Your Holdings</h3>
       <div className="panel-actions">
         <button className="secondary" onClick={() => { localStorage.clear(); location.reload(); }}>Reset World</button>
-        <a className="secondary" href="https://worldmobile.io/the-chain" target="_blank" rel="noreferrer">WMC</a>
-        <a className="secondary" href="https://grants.worldmobiletoken.com/" target="_blank" rel="noreferrer">WMC Grants</a>
-        <a className="secondary" href="https://x.com/wmchain" target="_blank" rel="noreferrer">WMC X</a>
+        <a className="secondary" href="https://x1.eco" target="_blank" rel="noreferrer">X1 EcoChain</a>
+        <a className="secondary" href="https://x.com/X1_EcoChain" target="_blank" rel="noreferrer">X1 X</a>
       </div>
       <div className="stats">
         <div className="stat"><div className="label">POINTS</div><div className="value">{myBal.points}</div></div>
@@ -40,7 +39,7 @@ export function ChargerPanel() {
         {myPlots.length === 0 && <div className="muted">No plots yet. Mint from the grid.</div>}
         {myPlots.map(p => (
           <div key={p.id} className="row">
-            <div>Plot {p.id} {p.charger?.peaqDid && <span className="peaq-badge">WMC</span>}</div>
+            <div>Plot {p.id} {p.charger?.peaqDid && <span className="peaq-badge">X1</span>}</div>
             <div>{p.charger ? `⚡ ${p.charger.ratePerSec}/s` : 'No charger'}</div>
           </div>
         ))}

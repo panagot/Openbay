@@ -2,9 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Wallet } from 'ethers';
 import { useWorldStore, startTicker } from '../state/store.js';
-
-const WMC_CHAIN_ID = 869;
-const WMC_RPC = import.meta.env.VITE_WMC_RPC || 'https://worldmobilechain-mainnet.g.alchemy.com/v2/demo';
+import { X1_CHAIN_ID, X1_RPC } from '../x1/x1Service.js';
 
 function generateLocalKey() {
   const existing = localStorage.getItem('vdw_dev_wallet');
@@ -27,18 +25,18 @@ async function connectMetaMask() {
   try {
     await window.ethereum.request({
       method: 'wallet_switchEthereumChain',
-      params: [{ chainId: `0x${WMC_CHAIN_ID.toString(16)}` }],
+      params: [{ chainId: `0x${X1_CHAIN_ID.toString(16)}` }],
     });
   } catch (e) {
     if (e.code === 4902) {
       await window.ethereum.request({
         method: 'wallet_addEthereumChain',
         params: [{
-          chainId: `0x${WMC_CHAIN_ID.toString(16)}`,
-          chainName: 'World Mobile Chain',
-          nativeCurrency: { name: 'WMTx', symbol: 'WMTX', decimals: 18 },
-          rpcUrls: [WMC_RPC],
-          blockExplorerUrls: ['https://explorer.worldmobile.io'],
+          chainId: `0x${X1_CHAIN_ID.toString(16)}`,
+          chainName: 'X1 EcoChain',
+          nativeCurrency: { name: 'X1', symbol: 'X1', decimals: 18 },
+          rpcUrls: [X1_RPC],
+          blockExplorerUrls: [import.meta.env.VITE_X1_EXPLORER || 'https://explorer.x1.eco'],
         }],
       });
     } else throw e;
@@ -98,13 +96,13 @@ export function WalletBar() {
           <ChargeIcon />
           <span>Virtual DeCharge World</span>
         </div>
-        <div className="slogan">Powering the EVolution on World Mobile Chain</div>
+        <div className="slogan">Powering the EVolution on X1 EcoChain</div>
       </div>
       <div className="actions">
         <Link to="/about"><button className="about-btn">What is this?</button></Link>
         <select value={mode} onChange={e => handleWalletChange(e.target.value)}>
           <option value="local">Local Dev Wallet</option>
-          <option value="metamask">Connect MetaMask (WMC)</option>
+          <option value="metamask">Connect MetaMask (X1)</option>
         </select>
         {user && (
           <div className="balance">

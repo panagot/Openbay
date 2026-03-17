@@ -5,14 +5,12 @@ export function FooterBar() {
     <footer className="site-footer">
       <div className="footer-inner">
         <div className="left">
-          <div className="tag">Powering the EVolution on World Mobile Chain</div>
-          <div className="muted">Virtual DeCharge World — DePIN for connectivity and physical infrastructure.</div>
+          <div className="tag">Powering the EVolution on X1 EcoChain</div>
+          <div className="muted">Virtual DeCharge World — DePIN for low-energy EV infrastructure on X1.</div>
         </div>
         <nav className="links">
-          <a href="https://worldmobile.io/the-chain" target="_blank" rel="noreferrer">WMC</a>
-          <a href="https://grants.worldmobiletoken.com/" target="_blank" rel="noreferrer">WMC Grants</a>
-          <a href="https://x.com/wmchain" target="_blank" rel="noreferrer">WMC X</a>
-          <a href="https://worldmobile.io/" target="_blank" rel="noreferrer">World Mobile</a>
+          <a href="https://x1.eco" target="_blank" rel="noreferrer">X1 EcoChain</a>
+          <a href="https://x.com/X1_EcoChain" target="_blank" rel="noreferrer">X1 X</a>
         </nav>
       </div>
     </footer>

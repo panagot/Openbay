@@ -96,7 +96,7 @@ export function ChargePointsPanel() {
         ))}
       </div>
       <div className="muted" style={{ marginTop: 8 }}>
-        Sample data for demo. Deploy chargers on World Mobile Chain.
+        Sample data for demo. Deploy chargers on X1 EcoChain.
       </div>
     </div>
   );

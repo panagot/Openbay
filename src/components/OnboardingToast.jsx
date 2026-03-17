@@ -13,12 +13,12 @@ export function OnboardingToast() {
   return (
     <div className="toast">
       <div className="toast-content">
-        <div className="title">Welcome to Virtual DeCharge World on World Mobile Chain</div>
+        <div className="title">Welcome to Virtual DeCharge World on X1 EcoChain</div>
         <div className="muted">You have 500 POINTS to start. DePIN for the Machine Economy.</div>
         <ol className="muted" style={{ margin: '8px 0 0 18px' }}>
           <li>Mint a plot and deploy a charger on the grid (or Spawn from sample charge points).</li>
           <li>Switch to Map and start a session from a marker. Add <code>VITE_GOOGLE_MAPS_API_KEY</code> in .env for full Google Maps.</li>
-          <li>Connect MetaMask to register chargers on WMC (chain identity). Watch the Activity feed.</li>
+          <li>Connect MetaMask to register chargers on X1 EcoChain (chain identity). Watch the Activity feed.</li>
         </ol>
         <div className="toast-actions">
           <button onClick={() => { setVisible(false); try { localStorage.setItem('vdw_onboard_seen', '1'); } catch {} }}>Got it</button>

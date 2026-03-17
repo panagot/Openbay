@@ -115,7 +115,7 @@ export const useWorldStore = create((set, get) => ({
     const newGrid = grid.slice();
     newGrid[idx] = { ...newGrid[idx], charger: { ...newGrid[idx].charger, peaqDid: didName } };
     set({ grid: newGrid });
-    get().pushEvent('peaq', `Charger ${plotId} → WMC ID ${didName}. Verifiable identity on-chain; service history builds trust with drivers.`);
+    get().pushEvent('peaq', `Charger ${plotId} → X1 ID ${didName}. Verifiable identity on-chain; service history builds trust with drivers.`);
     get().persist();
   },
 

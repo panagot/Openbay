@@ -148,7 +148,7 @@ export function GoogleMapsView() {
                         {active && (
                           <div style={{ marginTop: 6 }}>
                             <a
-                              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Charging at ${selected.name} • ${kwh} kWh • ${costPts} POINTS • #DePIN #WorldMobileChain @wmchain`)}`}
+                              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Charging at ${selected.name} • ${kwh} kWh • ${costPts} POINTS • #DePIN #X1EcoChain @X1_EcoChain`)}`}
                               target="_blank" rel="noreferrer"
                             >Share to X</a>
                           </div>
@@ -162,7 +162,7 @@ export function GoogleMapsView() {
           </GoogleMap>
         ) : null}
       </LoadScript>
-      <div className="muted" style={{ marginTop: 8 }}>Sample charge points. Map for visualization only. Powered by Google Maps · Built for World Mobile Chain.</div>
+      <div className="muted" style={{ marginTop: 8 }}>Sample charge points. Map for visualization only. Powered by Google Maps · Built for X1 EcoChain.</div>
     </div>
   );
 }

@@ -27,12 +27,12 @@ export default function App() {
         <section className="left">
           <div className="hero">
             <h2>Turn any parking spot into a revenue-generating EV charging node</h2>
-            <p className="subtitle">Virtual DeCharge World — the operating system for independent EV charger owners, powered by World Mobile Chain.</p>
+            <p className="subtitle">Virtual DeCharge World — the operating system for independent EV charger owners, powered by X1 EcoChain.</p>
             <p className="hero-entrepreneur">
-              <strong>Without a chain identity (DID)</strong>, chargers can’t be trusted, discovered, or monetized in a decentralized way. We give each station a machine identity on World Mobile Chain, verifiable sessions, and direct payments — <strong>real yield from physical chargers</strong>. Any app, fleet operator, or mapping service can integrate and query charger availability via WMC. Map your address, set your spots and rates; this grid is your first station — scale to many.
+              <strong>Without a chain identity (DID)</strong>, chargers can’t be trusted, discovered, or monetized in a decentralized way. We give each station a machine identity on X1 EcoChain, verifiable sessions, and direct payments — <strong>real yield from physical chargers</strong>. Any app, fleet operator, or mapping service can integrate and query charger availability via X1. Map your address, set your spots and rates; this grid is your first station — scale to many.
             </p>
             <p className="hero-inevitable">
-              As EV adoption grows, millions of underutilized parking spaces will become micro-infrastructure nodes. Virtual DeCharge World positions World Mobile Chain as a coordination layer for this emerging DePIN economy.
+              As EV adoption grows, millions of underutilized parking spaces will become micro-infrastructure nodes. Virtual DeCharge World positions X1 EcoChain as a coordination layer for this emerging DePIN economy.
             </p>
           </div>
           <div className="view-toggle-wrap">
