@@ -24,8 +24,8 @@ export function ChargerPanel() {
       <h3>Your Holdings</h3>
       <div className="panel-actions">
         <button className="secondary" onClick={() => { localStorage.clear(); location.reload(); }}>Reset World</button>
-        <a className="secondary" href="https://x1ecochain.com/" target="_blank" rel="noreferrer">X1 EcoChain</a>
-        <a className="secondary" href="https://ecosystem.x1ecochain.com/" target="_blank" rel="noreferrer">Ecosystem</a>
+        <a className="secondary" href="https://solana.com/solana-pay" target="_blank" rel="noreferrer">Solana Pay</a>
+        <a className="secondary" href="https://phantom.app/" target="_blank" rel="noreferrer">Phantom</a>
       </div>
       <div className="stats">
         <div className="stat"><div className="label">POINTS</div><div className="value">{myBal.points}</div></div>
@@ -39,7 +39,10 @@ export function ChargerPanel() {
         {myPlots.length === 0 && <div className="muted">No plots yet. Mint from the grid.</div>}
         {myPlots.map(p => (
           <div key={p.id} className="row">
-            <div>Plot {p.id} {p.charger?.peaqDid && <span className="peaq-badge">X1</span>}</div>
+            <div>
+              Plot {p.id}{' '}
+              {p.charger?.solanaAnchor && <span className="solana-badge">SOL</span>}
+            </div>
             <div>{p.charger ? `⚡ ${p.charger.ratePerSec}/s` : 'No charger'}</div>
           </div>
         ))}

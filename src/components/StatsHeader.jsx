@@ -6,7 +6,11 @@ export function StatsHeader() {
   const { charge_points } = data;
   const sessions = useWorldStore(s => s.sessions);
   const cities = useMemo(() => new Set(charge_points.map(c => c.location.city)), [charge_points]);
-  const totalKw = useMemo(() => charge_points.reduce((acc, cp) => acc + (cp.connectors?.[0]?.power_kw || 0), 0), [charge_points]);
+  const categories = useMemo(() => new Set(charge_points.map(c => c.category_label || c.category || '—')), [charge_points]);
+  const totalKw = useMemo(
+    () => charge_points.reduce((acc, cp) => acc + (cp.connectors?.[0]?.power_kw || 0), 0),
+    [charge_points],
+  );
   const activeSites = useMemo(() => charge_points.filter(cp => cp.status === 'active').length, [charge_points]);
   const activeSess = Object.keys(sessions).length;
 
@@ -15,11 +19,15 @@ export function StatsHeader() {
       <div className="sh-grid">
         <div className="sh-item">
           <div className="value">{charge_points.length}</div>
-          <div className="label">Sites</div>
+          <div className="label">Nodes listed</div>
         </div>
         <div className="sh-item">
           <div className="value">{activeSites}</div>
-          <div className="label">Active Sites</div>
+          <div className="label">Active</div>
+        </div>
+        <div className="sh-item">
+          <div className="value">{categories.size}</div>
+          <div className="label">Verticals</div>
         </div>
         <div className="sh-item">
           <div className="value">{cities.size}</div>
@@ -27,15 +35,13 @@ export function StatsHeader() {
         </div>
         <div className="sh-item">
           <div className="value">{totalKw}</div>
-          <div className="label">kW Listed</div>
+          <div className="label">Σ kW (1st slot)</div>
         </div>
         <div className={`sh-item ${activeSess > 0 ? 'highlight' : ''}`}>
           <div className="value">{activeSess}</div>
-          <div className="label">Active Sessions</div>
+          <div className="label">Live sessions</div>
         </div>
       </div>
     </div>
   );
 }
-
-

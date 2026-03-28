@@ -5,12 +5,13 @@ export function FooterBar() {
     <footer className="site-footer">
       <div className="footer-inner">
         <div className="left">
-          <div className="tag">EV DePIN on X1 EcoChain</div>
-          <div className="muted">Virtual DeCharge World — DePIN for low-energy EV infrastructure on X1.</div>
+          <div className="tag">OpenBay</div>
+          <div className="muted">Phantom anchoring + Open API export. Sandbox only — not production infrastructure software.</div>
         </div>
         <nav className="links">
-          <a href="https://x1ecochain.com/" target="_blank" rel="noreferrer">X1 EcoChain</a>
-          <a href="https://ecosystem.x1ecochain.com/" target="_blank" rel="noreferrer">Ecosystem</a>
+          <a href="https://solana.com/" target="_blank" rel="noreferrer">Solana</a>
+          <a href="https://phantom.app/" target="_blank" rel="noreferrer">Phantom</a>
+          <a href="https://solana.com/solana-pay" target="_blank" rel="noreferrer">Solana Pay</a>
         </nav>
       </div>
     </footer>

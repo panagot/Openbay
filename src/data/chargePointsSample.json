@@ -1,103 +1,280 @@
 {
   "charge_points": [
     {
-      "code": "BERSTD34",
-      "name": "3.3kW Charger",
+      "code": "EVBELAC22",
+      "name": "AC Type-2 · 22kW",
+      "category": "ev_charging",
+      "category_label": "EV charging",
+      "vertical": "Garage & small-lot AC charger",
       "no_of_connectors": 2,
-      "location": {
-        "city": "Bengaluru",
-        "address": "12 MG Road, Bengaluru, KA",
-        "latitude": 12.9716,
-        "longitude": 77.5946
-      },
+      "location": { "city": "Belgrade", "address": "Vračar, RS", "latitude": 44.7866, "longitude": 20.4489 },
       "status": "active",
-      "pricing": {
-        "time_based": { "rate": 2.0, "unit": "INR_per_min" },
-        "energy_based": { "rate": 19.0, "unit": "INR_per_kWh" }
-      },
-      "connectors": [
-        { "id": "C1", "type": "Type-2 AC", "power_kw": 3.3, "status": "available" },
-        { "id": "C2", "type": "Type-2 AC", "power_kw": 3.3, "status": "occupied" }
-      ]
+      "pricing": { "time_based": { "rate": 0.12, "unit": "EUR_per_min" }, "energy_based": { "rate": 0.45, "unit": "EUR_per_kWh" } },
+      "connectors": [{ "id": "C1", "type": "Type-2 AC", "power_kw": 22, "status": "available" }, { "id": "C2", "type": "Type-2 AC", "power_kw": 22, "status": "available" }]
     },
     {
-      "code": "DELHINR12",
-      "name": "7.4kW Charger",
+      "code": "EVSOFDC50",
+      "name": "DC fast · 50kW CCS",
+      "category": "ev_charging",
+      "category_label": "EV charging",
+      "vertical": "Retail parking fast charge",
       "no_of_connectors": 1,
-      "location": {
-        "city": "New Delhi",
-        "address": "Sector 18, Dwarka, New Delhi, DL",
-        "latitude": 28.6139,
-        "longitude": 77.209
-      },
+      "location": { "city": "Sofia", "address": "Lozenets, BG", "latitude": 42.6977, "longitude": 23.3219 },
       "status": "active",
-      "pricing": {
-        "time_based": { "rate": 2.5, "unit": "INR_per_min" },
-        "energy_based": { "rate": 20.0, "unit": "INR_per_kWh" }
-      },
-      "connectors": [
-        { "id": "C1", "type": "CCS2 DC", "power_kw": 7.4, "status": "available" }
-      ]
+      "pricing": { "time_based": { "rate": 0.35, "unit": "EUR_per_min" }, "energy_based": { "rate": 0.62, "unit": "EUR_per_kWh" } },
+      "connectors": [{ "id": "C1", "type": "CCS2 DC", "power_kw": 50, "status": "available" }]
     },
     {
-      "code": "MUMBAI45",
-      "name": "11kW Charger",
+      "code": "EVATH11",
+      "name": "Workplace 11kW dual",
+      "category": "ev_charging",
+      "category_label": "EV charging",
+      "vertical": "Office park daytime charging",
       "no_of_connectors": 2,
-      "location": {
-        "city": "Mumbai",
-        "address": "Andheri East, Mumbai, MH",
-        "latitude": 19.076,
-        "longitude": 72.8777
-      },
+      "location": { "city": "Athens", "address": "Marousi, GR", "latitude": 38.0469, "longitude": 23.806 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.08, "unit": "EUR_per_min" }, "energy_based": { "rate": 0.38, "unit": "EUR_per_kWh" } },
+      "connectors": [{ "id": "C1", "type": "Type-2 AC", "power_kw": 11, "status": "occupied" }, { "id": "C2", "type": "Type-2 AC", "power_kw": 11, "status": "available" }]
+    },
+    {
+      "code": "ENRGYBAT01",
+      "name": "Home battery evening export",
+      "category": "energy_flex",
+      "category_label": "Energy & flex",
+      "vertical": "5kWh export window for grid / neighbours",
+      "no_of_connectors": 1,
+      "location": { "city": "Ljubljana", "address": "Bežigrad, SI", "latitude": 46.0569, "longitude": 14.5058 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.05, "unit": "EUR_per_min" }, "energy_based": { "rate": 0.28, "unit": "EUR_per_kWh" } },
+      "connectors": [{ "id": "E1", "type": "AC export", "power_kw": 5, "status": "available" }]
+    },
+    {
+      "code": "ENRGYHP01",
+      "name": "Heat-pump flex (curtailment)",
+      "category": "energy_flex",
+      "category_label": "Energy & flex",
+      "vertical": "Reward for shifting 2kW for 30min",
+      "no_of_connectors": 1,
+      "location": { "city": "Zagreb", "address": "Trešnjevka, HR", "latitude": 45.815, "longitude": 15.9819 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.04, "unit": "EUR_per_min" }, "energy_based": { "rate": 0.15, "unit": "EUR_per_kWh" } },
+      "connectors": [{ "id": "E1", "type": "Flexible load", "power_kw": 2, "status": "available" }]
+    },
+    {
+      "code": "ENRGYGEN01",
+      "name": "Shared backup generator slot",
+      "category": "energy_flex",
+      "category_label": "Energy & flex",
+      "vertical": "Event / outage block booking",
+      "no_of_connectors": 1,
+      "location": { "city": "Skopje", "address": "Karpoš, MK", "latitude": 41.9965, "longitude": 21.4314 },
       "status": "maintenance",
-      "pricing": {
-        "time_based": { "rate": 1.5, "unit": "INR_per_min" },
-        "energy_based": { "rate": 17.0, "unit": "INR_per_kWh" }
-      },
-      "connectors": [
-        { "id": "C1", "type": "Type-2 AC", "power_kw": 11, "status": "maintenance" },
-        { "id": "C2", "type": "Type-2 AC", "power_kw": 11, "status": "maintenance" }
-      ]
+      "pricing": { "time_based": { "rate": 0.45, "unit": "EUR_per_min" }, "energy_based": { "rate": 0.55, "unit": "EUR_per_kWh" } },
+      "connectors": [{ "id": "E1", "type": "Genset tie-in", "power_kw": 8, "status": "maintenance" }]
     },
     {
-      "code": "CHENNAI88",
-      "name": "22kW Dual Port Charger",
-      "no_of_connectors": 2,
-      "location": {
-        "city": "Chennai",
-        "address": "OMR Road, Chennai, TN",
-        "latitude": 13.0827,
-        "longitude": 80.2707
-      },
+      "code": "MOBELOCK01",
+      "name": "E-bike / scooter locker bank",
+      "category": "mobility_micromobility",
+      "category_label": "Micromobility",
+      "vertical": "8 lockers · charge + secure",
+      "no_of_connectors": 8,
+      "location": { "city": "Tirana", "address": "Blloku, AL", "latitude": 41.3275, "longitude": 19.8187 },
       "status": "active",
-      "pricing": {
-        "time_based": { "rate": 3.0, "unit": "INR_per_min" },
-        "energy_based": { "rate": 21.5, "unit": "INR_per_kWh" }
-      },
-      "connectors": [
-        { "id": "C1", "type": "CCS2 DC", "power_kw": 22, "status": "available" },
-        { "id": "C2", "type": "CHAdeMO DC", "power_kw": 22, "status": "occupied" }
-      ]
+      "pricing": { "time_based": { "rate": 0.03, "unit": "EUR_per_min" }, "energy_based": { "rate": 0, "unit": "n/a" } },
+      "connectors": [{ "id": "L1", "type": "Locker 220V", "power_kw": 1, "status": "available" }]
     },
     {
-      "code": "HYDPLX09",
-      "name": "DC Fast Charger 30kW",
+      "code": "MOBCARGO01",
+      "name": "Cargo-bike hub",
+      "category": "mobility_micromobility",
+      "category_label": "Micromobility",
+      "vertical": "Last-mile fleet swap + repair stand",
+      "no_of_connectors": 4,
+      "location": { "city": "Berlin", "address": "Neukölln, DE", "latitude": 52.52, "longitude": 13.405 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.06, "unit": "EUR_per_min" }, "energy_based": { "rate": 0.22, "unit": "EUR_per_kWh" } },
+      "connectors": [{ "id": "D1", "type": "Cargo charge", "power_kw": 3, "status": "available" }]
+    },
+    {
+      "code": "MARINASH01",
+      "name": "Marina shore power (16A)",
+      "category": "marina_rv",
+      "category_label": "Marina & RV",
+      "vertical": "Pontoon overnight hookup",
+      "no_of_connectors": 6,
+      "location": { "city": "Split", "address": "ACI Marina, HR", "latitude": 43.5081, "longitude": 16.4402 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.18, "unit": "EUR_per_min" }, "energy_based": { "rate": 0.42, "unit": "EUR_per_kWh" } },
+      "connectors": [{ "id": "S1", "type": "Shore 230V", "power_kw": 4, "status": "available" }]
+    },
+    {
+      "code": "RVPAD30",
+      "name": "RV pad · 30A service",
+      "category": "marina_rv",
+      "category_label": "Marina & RV",
+      "vertical": "Campground metered hookup",
+      "no_of_connectors": 12,
+      "location": { "city": "Bar", "address": "Coastal camp, ME", "latitude": 42.0283, "longitude": 19.0886 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.22, "unit": "EUR_per_min" }, "energy_based": { "rate": 0.48, "unit": "EUR_per_kWh" } },
+      "connectors": [{ "id": "R1", "type": "RV pedestal", "power_kw": 7, "status": "available" }]
+    },
+    {
+      "code": "PARKLOAD01",
+      "name": "Loading bay · minutes",
+      "category": "parking_loading",
+      "category_label": "Parking & loading",
+      "vertical": "Commercial dock — book 15min blocks",
+      "no_of_connectors": 3,
+      "location": { "city": "Vienna", "address": "Simmering logistics, AT", "latitude": 48.2082, "longitude": 16.3738 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.25, "unit": "EUR_per_min" }, "energy_based": { "rate": 0, "unit": "n/a" } },
+      "connectors": [{ "id": "P1", "type": "Bay gate", "power_kw": 2, "status": "available" }]
+    },
+    {
+      "code": "PARKMETER01",
+      "name": "Reserved parking stall",
+      "category": "parking_loading",
+      "category_label": "Parking & loading",
+      "vertical": "EV + P2P stall unlock",
       "no_of_connectors": 1,
-      "location": {
-        "city": "Hyderabad",
-        "address": "Banjara Hills, Hyderabad, TS",
-        "latitude": 17.385,
-        "longitude": 78.4867
-      },
+      "location": { "city": "Bucharest", "address": "Sector 1, RO", "latitude": 44.4268, "longitude": 26.1025 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.15, "unit": "EUR_per_min" }, "energy_based": { "rate": 0, "unit": "n/a" } },
+      "connectors": [{ "id": "P1", "type": "Barrier", "power_kw": 1, "status": "available" }]
+    },
+    {
+      "code": "STORUNIT01",
+      "name": "Self-storage access session",
+      "category": "space_access",
+      "category_label": "Space & access",
+      "vertical": "Unit door + audit log",
+      "no_of_connectors": 24,
+      "location": { "city": "Warsaw", "address": "Mokotów, PL", "latitude": 52.2297, "longitude": 21.0122 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.02, "unit": "EUR_per_min" }, "energy_based": { "rate": 0, "unit": "n/a" } },
+      "connectors": [{ "id": "U1", "type": "Smart lock", "power_kw": 1, "status": "available" }]
+    },
+    {
+      "code": "WORK3D01",
+      "name": "Maker bench · 3D + laser",
+      "category": "space_access",
+      "category_label": "Space & access",
+      "vertical": "Hourly machine time",
+      "no_of_connectors": 3,
+      "location": { "city": "Prague", "address": "Holešovice fablab, CZ", "latitude": 50.0755, "longitude": 14.4378 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.35, "unit": "EUR_per_min" }, "energy_based": { "rate": 0.08, "unit": "EUR_per_kWh" } },
+      "connectors": [{ "id": "M1", "type": "Printer farm", "power_kw": 4, "status": "available" }]
+    },
+    {
+      "code": "STUDIOHR01",
+      "name": "Podcast / studio slot",
+      "category": "space_access",
+      "category_label": "Space & access",
+      "vertical": "Acoustic booth booking",
+      "no_of_connectors": 1,
+      "location": { "city": "Thessaloniki", "address": "Ladadika, GR", "latitude": 40.6401, "longitude": 22.9444 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.5, "unit": "EUR_per_min" }, "energy_based": { "rate": 0, "unit": "n/a" } },
+      "connectors": [{ "id": "R1", "type": "Room key", "power_kw": 2, "status": "available" }]
+    },
+    {
+      "code": "NETSTAR01",
+      "name": "Starlink / Wi-Fi hotspot",
+      "category": "compute_net",
+      "category_label": "Connectivity & edge",
+      "vertical": "Capped GB day-pass",
+      "no_of_connectors": 1,
+      "location": { "city": "Sarajevo", "address": "Bascarsija hills, BA", "latitude": 43.8563, "longitude": 18.4131 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.08, "unit": "EUR_per_min" }, "energy_based": { "rate": 0, "unit": "n/a" } },
+      "connectors": [{ "id": "W1", "type": "Wi-Fi voucher", "power_kw": 2, "status": "available" }]
+    },
+    {
+      "code": "EDGEPI01",
+      "name": "Raspberry Pi edge node",
+      "category": "compute_net",
+      "category_label": "Connectivity & edge",
+      "vertical": "Lightweight job / ping SLA",
+      "no_of_connectors": 1,
+      "location": { "city": "Cluj-Napoca", "address": "Tech park, RO", "latitude": 46.7712, "longitude": 23.6236 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.01, "unit": "EUR_per_min" }, "energy_based": { "rate": 0, "unit": "n/a" } },
+      "connectors": [{ "id": "N1", "type": "API slot", "power_kw": 1, "status": "available" }]
+    },
+    {
+      "code": "SENSAGG01",
+      "name": "Aggregated sensor feed",
+      "category": "compute_net",
+      "category_label": "Connectivity & edge",
+      "vertical": "Noise / air index — consent-first",
+      "no_of_connectors": 1,
+      "location": { "city": "Podgorica", "address": "City centre, ME", "latitude": 42.4304, "longitude": 19.2594 },
       "status": "offline",
-      "pricing": {
-        "time_based": { "rate": 3.5, "unit": "INR_per_min" },
-        "energy_based": { "rate": 22.0, "unit": "INR_per_kWh" }
-      },
-      "connectors": [
-        { "id": "C1", "type": "CCS2 DC", "power_kw": 30, "status": "offline" }
-      ]
+      "pricing": { "time_based": { "rate": 0.02, "unit": "EUR_per_min" }, "energy_based": { "rate": 0, "unit": "n/a" } },
+      "connectors": [{ "id": "I1", "type": "Metrics API", "power_kw": 1, "status": "offline" }]
+    },
+    {
+      "code": "CIVTOOL01",
+      "name": "Community tool library · power",
+      "category": "civic_community",
+      "category_label": "Civic & community",
+      "vertical": "Checkout tools + charged batteries",
+      "no_of_connectors": 2,
+      "location": { "city": "Pristina", "address": "Arberia, XK", "latitude": 42.6629, "longitude": 21.1655 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.01, "unit": "EUR_per_min" }, "energy_based": { "rate": 0, "unit": "n/a" } },
+      "connectors": [{ "id": "T1", "type": "Tool locker", "power_kw": 1, "status": "available" }]
+    },
+    {
+      "code": "CIVFRIDGE01",
+      "name": "Community fridge outlet",
+      "category": "civic_community",
+      "category_label": "Civic & community",
+      "vertical": "Sponsored cooling slot",
+      "no_of_connectors": 1,
+      "location": { "city": "Novi Sad", "address": "Detelinara, RS", "latitude": 45.2671, "longitude": 19.8335 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.02, "unit": "EUR_per_min" }, "energy_based": { "rate": 0.18, "unit": "EUR_per_kWh" } },
+      "connectors": [{ "id": "F1", "type": "Fridge circuit", "power_kw": 2, "status": "available" }]
+    },
+    {
+      "code": "CIVWATER01",
+      "name": "Public water fill station",
+      "category": "civic_community",
+      "category_label": "Civic & community",
+      "vertical": "Liter counter + micro-donation",
+      "no_of_connectors": 2,
+      "location": { "city": "Timișoara", "address": "Union Square, RO", "latitude": 45.7489, "longitude": 21.2087 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.005, "unit": "EUR_per_min" }, "energy_based": { "rate": 0, "unit": "n/a" } },
+      "connectors": [{ "id": "W1", "type": "Dispenser", "power_kw": 1, "status": "available" }]
+    },
+    {
+      "code": "MOBICORNER1",
+      "name": "Mobility corner · air + vacuum",
+      "category": "civic_community",
+      "category_label": "Civic & community",
+      "vertical": "Compressor + vac + tire gauge",
+      "no_of_connectors": 3,
+      "location": { "city": "Washington", "address": "DC metro pilot, US", "latitude": 38.9072, "longitude": -77.0369 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 0.1, "unit": "USD_cent_per_min" }, "energy_based": { "rate": 0, "unit": "n/a" } },
+      "connectors": [{ "id": "A1", "type": "Shared tools", "power_kw": 3, "status": "available" }]
+    },
+    {
+      "code": "BERSTD34",
+      "name": "3.3kW Charger · Bengaluru sample",
+      "category": "ev_charging",
+      "category_label": "EV charging",
+      "vertical": "Original demo row — India market rates",
+      "no_of_connectors": 2,
+      "location": { "city": "Bengaluru", "address": "12 MG Road, Bengaluru, KA", "latitude": 12.9716, "longitude": 77.5946 },
+      "status": "active",
+      "pricing": { "time_based": { "rate": 2.0, "unit": "INR_per_min" }, "energy_based": { "rate": 19.0, "unit": "INR_per_kWh" } },
+      "connectors": [{ "id": "C1", "type": "Type-2 AC", "power_kw": 3.3, "status": "available" }, { "id": "C2", "type": "Type-2 AC", "power_kw": 3.3, "status": "occupied" }]
     }
   ]
 }
-

@@ -14,12 +14,12 @@ export function StationOwnerPanel() {
       </p>
       <ul className="station-owner-steps">
         <li><strong>Pin your address</strong> — Point to your location on the map and register it.</li>
-        <li><strong>Register your profile</strong> — Get a chain identity (DID) for your station(s) on X1 EcoChain; verifiable on-chain.</li>
-        <li><strong>Set your spots & grid</strong> — Define how many charging spots you have; adjust the grid to match your lot.</li>
-        <li><strong>Set your rates</strong> — Time-based or energy-based pricing per charge; you earn, drivers pay on X1.</li>
+        <li><strong>Anchors (Solana)</strong> — Connect Phantom, deploy a charger, click <em>Anchor on Solana</em> to sign a station message (demo intent).</li>
+        <li><strong>Set your spots &amp; grid</strong> — Garage-style layout in the UI; real backends can mirror many locations later.</li>
+        <li><strong>Rates & settlement</strong> — Today: POINTS tick loop. Tomorrow: USDC via Solana Pay + meter telemetry.</li>
       </ul>
       <p className="muted" style={{ marginTop: 10, fontSize: '0.875rem' }}>
-        With grant support: multi-location dashboard, real-world address registration, and verifiable session attestation on X1 EcoChain.
+        Open <Link to="/lab">API Lab</Link> for the JSON we want fleets and agents to consume.
       </p>
       <Link to="/about" className="secondary" style={{ display: 'inline-block', marginTop: 8 }}>Why fund us →</Link>
     </div>

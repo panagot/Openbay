@@ -1,8 +1,10 @@
 {
-  "name": "virtual-decharge-world-x1",
+  "name": "openbay-sandbox",
   "version": "0.1.0",
   "private": true,
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +13,7 @@
   },
   "dependencies": {
     "@react-google-maps/api": "^2.20.7",
+    "@solana/web3.js": "^2.0.0",
     "clsx": "^2.1.1",
     "ethers": "^6.13.0",
     "nanoid": "^5.0.7",

@@ -1,0 +1,248 @@
+openapi: 3.1.0
+info:
+  title: OpenBay API (stub)
+  version: 0.1.1
+  description: >
+    Forward-looking contract aligned with the sandbox JSON export. Not served by the static demo.
+    Separate sandbox vs production keys; POSTs should send Idempotency-Key for safe retries (LLM review consensus).
+servers:
+  - url: https://api.example.com
+    description: Placeholder
+paths:
+  /api/v1/stations:
+    get:
+      summary: List listed stations / devices (discovery)
+      operationId: listStations
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/Lat"
+        - $ref: "#/components/parameters/Lng"
+        - $ref: "#/components/parameters/RadiusKm"
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-RateLimit-Limit:
+              schema: { type: integer }
+            X-RateLimit-Remaining:
+              schema: { type: integer }
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Station"
+        "401":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+  /api/v1/sessions:
+    get:
+      summary: Active sessions
+      operationId: listSessions
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-RateLimit-Limit:
+              schema: { type: integer }
+            X-RateLimit-Remaining:
+              schema: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error"
+  /api/v1/sessions/start:
+    post:
+      summary: Start session
+      operationId: startSession
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                plot_id:
+                  type: string
+                driver_pubkey:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "409":
+          description: Conflict / duplicate idempotency replay
+        "429":
+          description: Throttled
+          headers:
+            Retry-After:
+              schema: { type: integer }
+        default:
+          $ref: "#/components/responses/Error"
+  /api/v1/telemetry:
+    post:
+      summary: Ingest gateway / device telemetry (high volume)
+      operationId: postTelemetry
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [device_id, schema_version]
+              properties:
+                device_id:
+                  type: string
+                schema_version:
+                  type: integer
+                meter_wh:
+                  type: number
+                observed_at:
+                  type: integer
+                  format: int64
+      responses:
+        "202":
+          description: Accepted
+          headers:
+            X-RateLimit-Limit:
+              schema: { type: integer }
+            X-RateLimit-Remaining:
+              schema: { type: integer }
+        "429":
+          description: Throttled
+          headers:
+            Retry-After:
+              schema: { type: integer }
+        default:
+          $ref: "#/components/responses/Error"
+  /api/v1/devices:
+    post:
+      summary: Register or upsert a hardware device / gateway
+      operationId: upsertDevice
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [device_id]
+              properties:
+                device_id:
+                  type: string
+                capabilities:
+                  type: array
+                  items: { type: string }
+                lat:
+                  type: number
+                lng:
+                  type: number
+      responses:
+        "200":
+          description: OK
+        "409":
+          description: Conflict
+        default:
+          $ref: "#/components/responses/Error"
+  /api/v1/webhooks:
+    post:
+      summary: Register outbound webhook subscription (planned)
+      operationId: createWebhookSubscription
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                events:
+                  type: array
+                  items: { type: string }
+                signing_secret:
+                  type: string
+      responses:
+        "201":
+          description: Created
+        default:
+          $ref: "#/components/responses/Error"
+components:
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Required on mutating POSTs for safe retries over unreliable networks.
+    Lat:
+      name: lat
+      in: query
+      schema: { type: number }
+    Lng:
+      name: lng
+      in: query
+      schema: { type: number }
+    RadiusKm:
+      name: radius_km
+      in: query
+      schema: { type: number }
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Use dc_test_* keys in sandbox and dc_live_* in production (names illustrative).
+  responses:
+    Error:
+      description: Structured error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+  schemas:
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              example: DEVICE_NOT_FOUND
+            message:
+              type: string
+            request_id:
+              type: string
+    Station:
+      type: object
+      description: Mirrors browser export fields where applicable
+      properties:
+        plot_id:
+          type: string
+        catalog_code:
+          type: string
+          nullable: true
+        owner:
+          type: string
+        rate_per_sec:
+          type: integer
+        session_active:
+          type: boolean

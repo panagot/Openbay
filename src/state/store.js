@@ -14,13 +14,38 @@ const initialPlots = () => {
   return arr;
 };
 
-const persistKey = 'vdw_state_v1';
+const persistKey = 'vdw_state_v2';
+
+function migrateGridChargers(grid) {
+  if (!Array.isArray(grid)) return grid;
+  return grid.map((p) => {
+    if (!p?.charger) return p;
+    const c = { ...p.charger };
+    if (c.peaqDid != null && c.solanaAnchor == null) {
+      c.solanaAnchor = c.peaqDid;
+      delete c.peaqDid;
+    }
+    return { ...p, charger: c };
+  });
+}
 
 function loadState() {
   try {
-    const raw = localStorage.getItem(persistKey);
+    let raw = localStorage.getItem(persistKey);
+    if (!raw) {
+      raw = localStorage.getItem('vdw_state_v1');
+      if (raw) {
+        const legacy = JSON.parse(raw);
+        const migrated = { ...legacy, grid: migrateGridChargers(legacy.grid) };
+        localStorage.setItem(persistKey, JSON.stringify(migrated));
+      }
+    }
     if (!raw) return null;
-    return JSON.parse(raw);
+    const data = JSON.parse(raw);
+    if (data.grid) data.grid = migrateGridChargers(data.grid);
+    if (!data.cpToPlot) data.cpToPlot = {};
+    if (!data.cpMeta) data.cpMeta = {};
+    return data;
   } catch (e) {
     return null;
   }
@@ -36,11 +61,11 @@ export const useWorldStore = create((set, get) => ({
   grid: initialPlots(),
   rows: GRID_ROWS,
   cols: GRID_COLS,
-  user: null, // { pubkey, label }
+  user: null, // { pubkey, label, walletKind?: 'local'|'evm'|'solana' }
   balances: {}, // pubkey -> { points: number, earned: number, spent: number }
   sessions: {}, // plotId -> { driver, startTs, ratePerSec }
   cpToPlot: {}, // charge point code -> plotId
-  cpMeta: {}, // charge point code -> { powerKw: number }
+  cpMeta: {}, // charge point code -> { powerKw, category?, vertical?, name?, category_label? }
   events: [],
 
   initFromStorage: () => {
@@ -50,8 +75,18 @@ export const useWorldStore = create((set, get) => ({
   },
 
   persist: () => {
-    const { grid, rows, cols, user, balances, sessions, events } = get();
-    saveState({ grid, rows, cols, user, balances, sessions, events });
+    const s = get();
+    saveState({
+      grid: s.grid,
+      rows: s.rows,
+      cols: s.cols,
+      user: s.user,
+      balances: s.balances,
+      sessions: s.sessions,
+      events: s.events,
+      cpToPlot: s.cpToPlot,
+      cpMeta: s.cpMeta,
+    });
   },
 
   ensureUser: (user) => {
@@ -99,31 +134,48 @@ export const useWorldStore = create((set, get) => ({
     const stake = 100;
     if ((balances[user.pubkey]?.points || 0) < stake) throw new Error('Not enough points to stake');
     const newGrid = grid.slice();
-    newGrid[idx] = { ...plot, charger: { ratePerSec, staked: stake, owner: user.pubkey, peaqDid: null } };
+    newGrid[idx] = { ...plot, charger: { ratePerSec, staked: stake, owner: user.pubkey, solanaAnchor: null } };
     const newBalances = { ...balances };
     newBalances[user.pubkey].points -= stake;
     newBalances[user.pubkey].spent += stake;
     set({ grid: newGrid, balances: newBalances });
-    get().pushEvent('charger', `${user.label} deployed a charger on ${plotId} (rate ${ratePerSec}/s)`);
+    get().pushEvent('charger', `${user.label} deployed a node on ${plotId} (rate ${ratePerSec}/s)`);
     get().persist();
   },
 
-  updateChargerPeaqDid: (plotId, didName) => {
+  updateChargerSolanaAnchor: (plotId, stationId, sigPreview) => {
     const { grid } = get();
     const idx = grid.findIndex(p => p.id === plotId);
     if (idx === -1 || !grid[idx].charger) return;
     const newGrid = grid.slice();
-    newGrid[idx] = { ...newGrid[idx], charger: { ...newGrid[idx].charger, peaqDid: didName } };
+    newGrid[idx] = {
+      ...newGrid[idx],
+      charger: { ...newGrid[idx].charger, solanaAnchor: stationId },
+    };
     set({ grid: newGrid });
-    get().pushEvent('peaq', `Charger ${plotId} → X1 ID ${didName}. Verifiable identity on-chain; service history builds trust with drivers.`);
+    get().pushEvent(
+      'solana',
+      `Station ${plotId} anchored (Solana): ${stationId} · sig ${sigPreview}`,
+    );
     get().persist();
   },
 
-  linkChargePointToPlot: (cpCode, plotId, powerKw = 3) => {
+  linkChargePointToPlot: (cpCode, plotId, meta = 3) => {
+    const isNum = typeof meta === 'number';
+    const powerKw = isNum ? meta : (meta.powerKw ?? 3);
+    const extra = isNum
+      ? {}
+      : {
+          category: meta.category,
+          vertical: meta.vertical,
+          name: meta.name,
+          category_label: meta.category_label,
+        };
     const mapping = { ...get().cpToPlot };
     mapping[cpCode] = plotId;
-    const meta = { ...get().cpMeta, [cpCode]: { powerKw } };
-    set({ cpToPlot: mapping, cpMeta: meta });
+    const row = { powerKw, ...extra };
+    const nextMeta = { ...get().cpMeta, [cpCode]: row };
+    set({ cpToPlot: mapping, cpMeta: nextMeta });
     get().persist();
   },
 
@@ -137,7 +189,7 @@ export const useWorldStore = create((set, get) => ({
     if ((balances[user.pubkey]?.points || 0) < rate) throw new Error('Insufficient points to start');
     const newSessions = { ...sessions, [plotId]: { driver: user.pubkey, startTs: Date.now(), ratePerSec: rate } };
     set({ sessions: newSessions });
-    get().pushEvent('session', `${user.label} started charging on ${plotId}`);
+    get().pushEvent('session', `${user.label} started a session on ${plotId}`);
     get().persist();
   },
 

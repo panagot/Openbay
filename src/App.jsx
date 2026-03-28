@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { WalletBar } from './components/WalletBar.jsx';
 import { MapGrid } from './components/MapGrid.jsx';
 import { ChargerPanel } from './components/ChargerPanel.jsx';
@@ -12,10 +13,15 @@ import { FooterBar } from './components/FooterBar.jsx';
 import { StatsHeader } from './components/StatsHeader.jsx';
 import { RecentEventsStrip as RecentEvents } from './components/RecentEventsStrip.jsx';
 import { OnboardingToast } from './components/OnboardingToast.jsx';
+import { OpenApiPanel } from './components/OpenApiPanel.jsx';
+import { HardwareApiPanel } from './components/HardwareApiPanel.jsx';
+import { PersonaToggle } from './components/PersonaToggle.jsx';
+import { usePersona } from './context/PersonaContext.jsx';
 
-export default function App() {
+function AppInner() {
+  const { persona } = usePersona();
   const [view, setView] = React.useState(() => {
-    try { return localStorage.getItem('vdw_view') || 'grid'; } catch { return 'grid'; }
+    try { return localStorage.getItem('vdw_view') || 'map'; } catch { return 'map'; }
   });
   React.useEffect(() => { try { localStorage.setItem('vdw_view', view); } catch {} }, [view]);
   return (
@@ -25,32 +31,97 @@ export default function App() {
       <RecentEvents />
       <main className="layout">
         <section className="left">
-          <div className="hero">
-            <h2>Turn any parking spot into a revenue-generating EV charging node</h2>
-            <p className="subtitle">Virtual DeCharge World — the operating system for independent EV charger owners, powered by X1 EcoChain.</p>
-            <p className="hero-entrepreneur">
-              <strong>Without a chain identity (DID)</strong>, chargers can’t be trusted, discovered, or monetized in a decentralized way. We give each station a machine identity on X1 EcoChain, verifiable sessions, and direct payments — <strong>real yield from physical chargers</strong>. Any app, fleet operator, or mapping service can integrate and query charger availability via X1. Map your address, set your spots and rates; this grid is your first station — scale to many.
-            </p>
-            <p className="hero-inevitable">
-              As EV adoption grows, millions of underutilized parking spaces will become micro-infrastructure nodes. Virtual DeCharge World positions X1 EcoChain as a coordination layer for this emerging DePIN economy.
+          <div className="hero hero-surface">
+            <div className="hero-top-row">
+              <div className="hero-kicker">Sandbox · v0.1</div>
+              <PersonaToggle idPrefix="home" />
+            </div>
+            <h2>Multi-vertical host operations</h2>
+            {persona === 'host' ? (
+              <p className="subtitle">
+                Run your <strong>slot grid</strong>, spawn sites from the <strong>map catalog</strong>, and simulate{' '}
+                <strong>POINTS</strong> sessions. Phantom is optional for signing a station anchor. Building hardware or
+                fleet software? Switch to <strong>OEM / integrator</strong> for API &amp; webhook docs.
+              </p>
+            ) : (
+              <p className="subtitle">
+                Model EV, flex energy, micromobility, and edge nodes on a slot grid and map. OEMs and gateways target the
+                same discovery + session JSON this browser exports—register devices, post telemetry, expose{' '}
+                <code className="hero-inline-code">GET /api/v1/stations</code> to fleets (hosted API is roadmap; see{' '}
+                <Link to="/lab">API Lab</Link>).
+              </p>
+            )}
+            <p className="hero-footnote">
+              <Link to="/about">Product &amp; wallets</Link>
+              <span className="hero-footnote-sep" aria-hidden>
+                ·
+              </span>
+              Solana Pay &amp; live backend are roadmap items.
             </p>
           </div>
           <div className="view-toggle-wrap">
-            <div className="view-toggle">
-              <button className={`tab ${view === 'grid' ? 'active' : ''}`} onClick={() => setView('grid')}>Grid</button>
-              <button className={`tab ${view === 'map' ? 'active' : ''}`} onClick={() => setView('map')}>Map</button>
+            <div className="view-toggle-row">
+              <span className="view-toggle-label" id="workspace-label">
+                Workspace
+              </span>
+              <div className="view-toggle" role="tablist" aria-labelledby="workspace-label">
+                <button
+                  type="button"
+                  role="tab"
+                  id="tab-grid"
+                  aria-selected={view === 'grid'}
+                  aria-controls="workspace-panel"
+                  className={`tab ${view === 'grid' ? 'active' : ''}`}
+                  onClick={() => setView('grid')}
+                >
+                  Grid
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  id="tab-map"
+                  aria-selected={view === 'map'}
+                  aria-controls="workspace-panel"
+                  className={`tab ${view === 'map' ? 'active' : ''}`}
+                  onClick={() => setView('map')}
+                >
+                  Map
+                </button>
+              </div>
             </div>
-            <p className="view-toggle-hint">Grid = garage layout example (spots you own). Map = real-world view with demo stations.</p>
+            <p className="view-toggle-hint">Grid: your slots. Map: sample catalog — spawn nodes into the grid.</p>
             <WhyDePINPanel />
+            <div id="workspace-panel" role="tabpanel" aria-labelledby={view === 'grid' ? 'tab-grid' : 'tab-map'}>
+              {view === 'grid' ? <MapGrid /> : <GoogleMapsView />}
+            </div>
           </div>
-          {view === 'grid' ? <MapGrid /> : <GoogleMapsView />}
         </section>
         <section className="right">
           <ChargerPanel />
           <StationOwnerPanel />
-          <Leaderboard />
+          {persona === 'oem' && (
+            <>
+              <HardwareApiPanel />
+              <Leaderboard />
+            </>
+          )}
+          {persona === 'host' && <Leaderboard />}
           <ChargePointsPanel />
-          <ActivityFeed />
+          {persona === 'oem' && (
+            <>
+              <OpenApiPanel compact />
+              <ActivityFeed />
+            </>
+          )}
+          {persona === 'host' && (
+            <div className="panel host-integrator-nudge">
+              <h3>Integrations</h3>
+              <p className="muted small" style={{ marginBottom: 0 }}>
+                Hardware vendors and fleets: switch to <strong>OEM / integrator</strong> above for the API onboarding panel,
+                Open API export, and activity log—or open <Link to="/lab">API Lab</Link> directly.
+              </p>
+            </div>
+          )}
         </section>
       </main>
       <FooterBar />
@@ -59,4 +130,7 @@ export default function App() {
   );
 }
 
+export default function App() {
+  return <AppInner />;
+}
 

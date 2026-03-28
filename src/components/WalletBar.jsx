@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Wallet } from 'ethers';
 import { useWorldStore, startTicker } from '../state/store.js';
-import { X1_CHAIN_ID, X1_RPC } from '../x1/x1Service.js';
+import { connectPhantomWallet } from '../solana/solanaService.js';
 
 function generateLocalKey() {
   const existing = localStorage.getItem('vdw_dev_wallet');
@@ -18,36 +18,9 @@ function generateLocalKey() {
   return obj;
 }
 
-async function connectMetaMask() {
-  if (!window.ethereum) throw new Error('MetaMask not installed');
-  const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-  if (!accounts?.[0]) throw new Error('No account selected');
-  try {
-    await window.ethereum.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: `0x${X1_CHAIN_ID.toString(16)}` }],
-    });
-  } catch (e) {
-    if (e.code === 4902) {
-      await window.ethereum.request({
-        method: 'wallet_addEthereumChain',
-        params: [{
-          chainId: `0x${X1_CHAIN_ID.toString(16)}`,
-          chainName: 'X1 EcoChain',
-          nativeCurrency: { name: 'X1', symbol: 'X1', decimals: 18 },
-          rpcUrls: [X1_RPC],
-          blockExplorerUrls: [import.meta.env.VITE_X1_EXPLORER || 'https://maculatus-scan.x1eco.com/'],
-        }],
-      });
-    } else throw e;
-  }
-  return { address: accounts[0], isMetaMask: true };
-}
-
 export function WalletBar() {
   const [mode, setMode] = useState('local');
   const [localWallet, setLocalWallet] = useState(null);
-  const [metaMaskAddr, setMetaMaskAddr] = useState(null);
   const user = useWorldStore(s => s.user);
   const ensureUser = useWorldStore(s => s.ensureUser);
   const initFromStorage = useWorldStore(s => s.initFromStorage);
@@ -63,28 +36,75 @@ export function WalletBar() {
     startTicker();
     const w = generateLocalKey();
     setLocalWallet(w);
-    ensureUser({ pubkey: w.address, label: 'Local Dev Wallet' });
+    let savedMode = null;
+    try {
+      savedMode = localStorage.getItem('vdw_wallet_mode');
+      if (savedMode && savedMode !== 'phantom' && savedMode !== 'local') {
+        localStorage.setItem('vdw_wallet_mode', 'local');
+        savedMode = 'local';
+      }
+    } catch {
+      savedMode = null;
+    }
+    (async () => {
+      if (savedMode === 'phantom') {
+        try {
+          const { address } = await connectPhantomWallet({ onlyIfTrusted: true });
+          ensureUser({
+            pubkey: address,
+            label: `Phantom ${address.slice(0, 4)}…${address.slice(-4)}`,
+            walletKind: 'solana',
+          });
+          setMode('phantom');
+          return;
+        } catch {
+          /* fall through */
+        }
+      }
+      ensureUser({ pubkey: w.address, label: 'Local Dev Wallet', walletKind: 'local' });
+      setMode('local');
+    })();
   }, []);
 
-  const handleWalletChange = async (newMode) => {
-    if (newMode === 'metamask') {
+  const handleWalletChange = async newMode => {
+    if (newMode === 'phantom') {
       try {
-        const { address } = await connectMetaMask();
-        setMetaMaskAddr(address);
-        ensureUser({ pubkey: address, label: `MetaMask ${address.slice(0, 6)}…${address.slice(-4)}` });
-        setMode('metamask');
+        const { address } = await connectPhantomWallet();
+        ensureUser({
+          pubkey: address,
+          label: `Phantom ${address.slice(0, 4)}…${address.slice(-4)}`,
+          walletKind: 'solana',
+        });
+        setMode('phantom');
+        try {
+          localStorage.setItem('vdw_wallet_mode', 'phantom');
+        } catch {}
       } catch (e) {
         console.error(e);
-        alert(e.message || 'Failed to connect MetaMask');
+        alert(e.message || 'Failed to connect Phantom');
       }
     } else {
       setMode('local');
-      if (localWallet) ensureUser({ pubkey: localWallet.address, label: 'Local Dev Wallet' });
+      try {
+        localStorage.setItem('vdw_wallet_mode', 'local');
+      } catch {}
+      if (localWallet) {
+        ensureUser({ pubkey: localWallet.address, label: 'Local Dev Wallet', walletKind: 'local' });
+      }
     }
   };
 
   const ChargeIcon = () => (
-    <svg className="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg
+      className="brand-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
       <path d="M13 2L3 14h8l-2 8 10-12h-8l2-8z" />
     </svg>
   );
@@ -94,20 +114,27 @@ export function WalletBar() {
       <div className="brand-wrap">
         <div className="brand">
           <ChargeIcon />
-          <span>Virtual DeCharge World</span>
+          <span>OpenBay</span>
         </div>
-        <div className="slogan">EV DePIN on X1 EcoChain</div>
+        <div className="slogan">Host-node sandbox · sessions, signing &amp; API export</div>
       </div>
       <div className="actions">
-        <Link to="/about"><button className="about-btn">What is this?</button></Link>
+        <Link to="/lab" className="header-btn header-btn--primary">
+          API Lab
+        </Link>
+        <Link to="/about" className="header-btn">
+          About
+        </Link>
         <select value={mode} onChange={e => handleWalletChange(e.target.value)}>
           <option value="local">Local Dev Wallet</option>
-          <option value="metamask">Connect MetaMask (X1)</option>
+          <option value="phantom">Phantom (Solana)</option>
         </select>
         {user && (
           <div className="balance">
             <span className="pk">{user.label}</span>
-            <span className="pts">{currentBal.points} POINTS</span>
+            <span className="pts">
+              <span className="balance-val">{currentBal.points}</span> pts
+            </span>
           </div>
         )}
       </div>
