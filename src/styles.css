@@ -830,7 +830,6 @@ button.peaq-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   box-shadow: none;
 }
 .station-owner-panel { border-left: 2px solid var(--accent); }
-.my-spots-panel { border-left: 2px solid var(--success); }
 .my-spots-lead { margin-top: -8px; margin-bottom: var(--space-3); }
 .my-spots-sub { margin-top: var(--space-5); }
 .my-spots-sub:first-of-type { margin-top: 0; }
