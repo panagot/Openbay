@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { WalletBar } from './components/WalletBar.jsx';
 import { MapGrid } from './components/MapGrid.jsx';
 import { ChargerPanel } from './components/ChargerPanel.jsx';
+import { MySpotsPanel } from './components/MySpotsPanel.jsx';
 import { Leaderboard } from './components/Leaderboard.jsx';
 import { ActivityFeed } from './components/ActivityFeed.jsx';
 import { ChargePointsPanel } from './components/ChargePointsPanel.jsx';
@@ -98,6 +99,7 @@ function AppInner() {
         </section>
         <section className="right">
           <ChargerPanel />
+          <MySpotsPanel />
           <StationOwnerPanel />
           {persona === 'oem' && (
             <>

@@ -690,6 +690,51 @@ a.header-btn {
   box-shadow: 0 0 0 1px var(--success);
   border-color: var(--success);
 }
+.cell.has-booking:not(.active) {
+  border-color: rgba(212, 160, 23, 0.45);
+  box-shadow: 0 0 0 1px rgba(212, 160, 23, 0.2);
+}
+.cell-listing {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--link);
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.cell-booking-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  font-size: 0.625rem;
+  font-weight: 600;
+}
+.cell-booking-you { color: var(--warning); }
+.cell-booking-busy { color: var(--text-tertiary); }
+.cell-booking-time {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+.cell-book-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.cell-book-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin-right: 2px;
+}
+.badge.booking-legend {
+  background: var(--warning-bg);
+  border: 1px solid rgba(212, 160, 23, 0.35);
+  color: var(--warning);
+}
 .coords { font-size: 0.625rem; font-weight: 600; color: var(--text-tertiary); letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
 .owner { font-size: 0.6875rem; font-weight: 600; color: var(--text-secondary); }
 .charger { font-size: 0.75rem; font-weight: 600; color: var(--success); }
@@ -785,6 +830,57 @@ button.peaq-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   box-shadow: none;
 }
 .station-owner-panel { border-left: 2px solid var(--accent); }
+.my-spots-panel { border-left: 2px solid var(--success); }
+.my-spots-lead { margin-top: -8px; margin-bottom: var(--space-3); }
+.my-spots-sub { margin-top: var(--space-5); }
+.my-spots-sub:first-of-type { margin-top: 0; }
+.my-spots-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.my-spots-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.my-spots-label input,
+.my-spots-label select {
+  font: inherit;
+  font-weight: 500;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-primary);
+}
+.my-spots-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+.my-spots-booking-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.my-spots-booking-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+.my-spots-booking-list li:last-child { border-bottom: none; }
+.my-spots-booking-list strong { color: var(--text-primary); }
 .station-owner-steps {
   list-style: none;
   padding: 0;

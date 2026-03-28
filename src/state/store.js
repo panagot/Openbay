@@ -45,6 +45,7 @@ function loadState() {
     if (data.grid) data.grid = migrateGridChargers(data.grid);
     if (!data.cpToPlot) data.cpToPlot = {};
     if (!data.cpMeta) data.cpMeta = {};
+    if (!data.reservations) data.reservations = {};
     return data;
   } catch (e) {
     return null;
@@ -66,11 +67,14 @@ export const useWorldStore = create((set, get) => ({
   sessions: {}, // plotId -> { driver, startTs, ratePerSec }
   cpToPlot: {}, // charge point code -> plotId
   cpMeta: {}, // charge point code -> { powerKw, category?, vertical?, name?, category_label? }
+  /** plotId -> { bookerPubkey, untilMs, feePoints } — demo booking / hold */
+  reservations: {},
   events: [],
 
   initFromStorage: () => {
     const snap = loadState();
     if (!snap) return;
+    if (!snap.reservations) snap.reservations = {};
     set(snap);
   },
 
@@ -86,6 +90,7 @@ export const useWorldStore = create((set, get) => ({
       events: s.events,
       cpToPlot: s.cpToPlot,
       cpMeta: s.cpMeta,
+      reservations: s.reservations,
     });
   },
 
@@ -160,6 +165,179 @@ export const useWorldStore = create((set, get) => ({
     get().persist();
   },
 
+  /** Public catalog fields for grant demo (owner-editable) */
+  setPlotListing: (plotId, listing) => {
+    const { user, grid } = get();
+    if (!user) throw new Error('Connect a wallet');
+    const idx = grid.findIndex(p => p.id === plotId);
+    if (idx === -1) throw new Error('Plot not found');
+    const plot = grid[idx];
+    if (plot.owner !== user.pubkey) throw new Error('You do not own this plot');
+    if (!plot.charger) throw new Error('Deploy a node first, then set listing details');
+    const name = String(listing?.name || '').trim() || `Spot ${plotId}`;
+    const vertical = String(listing?.vertical || '').trim() || 'Host-listed';
+    const category_label = String(listing?.category_label || '').trim() || 'Custom host';
+    const powerKw = Math.max(0.5, Number(listing?.powerKw) || 3);
+    const newGrid = grid.slice();
+    newGrid[idx] = {
+      ...plot,
+      listing: { name, vertical, category_label, powerKw, updatedAt: Date.now() },
+    };
+    set({ grid: newGrid });
+    get().pushEvent('system', `Listed “${name}” on ${plotId} for discovery / API export`);
+    get().persist();
+  },
+
+  clearPlotListing: plotId => {
+    const { user, grid } = get();
+    if (!user) throw new Error('Connect a wallet');
+    const idx = grid.findIndex(p => p.id === plotId);
+    if (idx === -1) return;
+    const plot = grid[idx];
+    if (plot.owner !== user.pubkey) throw new Error('You do not own this plot');
+    const newGrid = grid.slice();
+    newGrid[idx] = { ...plot, listing: null };
+    set({ grid: newGrid });
+    get().pushEvent('system', `Removed listing text from ${plotId}`);
+    get().persist();
+  },
+
+  /** Undeploy node: refunds 70% of stake; clears catalog links to this plot */
+  removeCharger: plotId => {
+    const { user, grid, balances, sessions, cpToPlot } = get();
+    if (!user) throw new Error('Connect a wallet');
+    if (sessions[plotId]) throw new Error('Stop the active session first');
+    const idx = grid.findIndex(p => p.id === plotId);
+    if (idx === -1) return;
+    const plot = grid[idx];
+    if (plot.owner !== user.pubkey) throw new Error('You do not own this plot');
+    if (!plot.charger) throw new Error('No node deployed here');
+    const stake = plot.charger.staked || 100;
+    const refund = Math.floor(stake * 0.7);
+    const newGrid = grid.slice();
+    newGrid[idx] = { ...plot, charger: null, listing: null };
+    const newBalances = { ...balances };
+    const ob = { ...(newBalances[user.pubkey] || { points: 0, earned: 0, spent: 0 }) };
+    ob.points += refund;
+    ob.earned += refund;
+    newBalances[user.pubkey] = ob;
+    const mapping = { ...cpToPlot };
+    Object.keys(mapping).forEach(code => {
+      if (mapping[code] === plotId) delete mapping[code];
+    });
+    const nextMeta = { ...get().cpMeta };
+    Object.keys(cpToPlot).forEach(code => {
+      if (cpToPlot[code] === plotId) delete nextMeta[code];
+    });
+    const reservations = { ...get().reservations };
+    delete reservations[plotId];
+    set({ grid: newGrid, balances: newBalances, cpToPlot: mapping, cpMeta: nextMeta, reservations });
+    get().pushEvent('charger', `Removed node on ${plotId} · refunded ${refund} POINTS`);
+    get().persist();
+  },
+
+  /** Release empty plot (no node): refunds 50% of mint */
+  releaseLand: plotId => {
+    const { user, grid, balances, sessions, reservations } = get();
+    if (!user) throw new Error('Connect a wallet');
+    if (sessions[plotId]) throw new Error('Stop any session on this plot first');
+    const idx = grid.findIndex(p => p.id === plotId);
+    if (idx === -1) return;
+    const plot = grid[idx];
+    if (plot.owner !== user.pubkey) throw new Error('You do not own this plot');
+    if (plot.charger) throw new Error('Remove the node first, then you can release the land');
+    const newGrid = grid.slice();
+    newGrid[idx] = { ...plot, owner: null, listing: null };
+    const newBalances = { ...balances };
+    const ob = { ...(newBalances[user.pubkey] || { points: 0, earned: 0, spent: 0 }) };
+    const refund = 25;
+    ob.points += refund;
+    ob.earned += refund;
+    newBalances[user.pubkey] = ob;
+    const res = { ...reservations };
+    delete res[plotId];
+    set({ grid: newGrid, balances: newBalances, reservations: res });
+    get().pushEvent('land', `Released land ${plotId} · refunded ${refund} POINTS`);
+    get().persist();
+  },
+
+  /**
+   * Book another host's node for a time window (demo). Fee splits ~70% host / 30% network sink.
+   */
+  reserveSpot: (plotId, durationMins = 30) => {
+    const { user, grid, balances, sessions, reservations } = get();
+    if (!user) throw new Error('Connect a wallet');
+    const plot = grid.find(p => p.id === plotId);
+    if (!plot?.charger) throw new Error('Nothing bookable on this plot');
+    if (plot.owner === user.pubkey) throw new Error('Use “Start session” on your own node — booking is for guests');
+    if (sessions[plotId]) throw new Error('This spot is in use right now');
+    const now = Date.now();
+    const existing = reservations[plotId];
+    if (existing && existing.untilMs > now) throw new Error('Already booked — try another slot or wait for expiry');
+    const dm = Math.min(180, Math.max(5, Number(durationMins) || 30));
+    const fee = Math.min(120, 20 + Math.floor(dm / 10) * 8);
+    if ((balances[user.pubkey]?.points || 0) < fee) throw new Error(`Need ${fee} POINTS to book`);
+    const newBalances = { ...balances };
+    const booker = { ...(newBalances[user.pubkey] || { points: 0, earned: 0, spent: 0 }) };
+    booker.points -= fee;
+    booker.spent += fee;
+    newBalances[user.pubkey] = booker;
+    const hostPk = plot.charger.owner;
+    const host = { ...(newBalances[hostPk] || { points: 0, earned: 0, spent: 0 }) };
+    const hostShare = Math.floor(fee * 0.7);
+    host.points += hostShare;
+    host.earned += hostShare;
+    newBalances[hostPk] = host;
+    const newRes = {
+      ...reservations,
+      [plotId]: { bookerPubkey: user.pubkey, untilMs: now + dm * 60_000, feePoints: fee, hostPubkey: hostPk },
+    };
+    set({ balances: newBalances, reservations: newRes });
+    get().pushEvent('session', `${user.label} booked ${plotId} for ${dm}m (${fee} pts)`);
+    get().persist();
+  },
+
+  cancelReservation: plotId => {
+    const { user, reservations, balances } = get();
+    const r = reservations[plotId];
+    if (!r || !user) return;
+    const now = Date.now();
+    if (now > r.untilMs) {
+      const next = { ...reservations };
+      delete next[plotId];
+      set({ reservations: next });
+      get().persist();
+      return;
+    }
+    const isBooker = r.bookerPubkey === user.pubkey;
+    const isHost = r.hostPubkey === user.pubkey;
+    if (!isBooker && !isHost) throw new Error('Only the booker or host can cancel');
+    const newBalances = { ...balances };
+    const hostShare = Math.floor(r.feePoints * 0.7);
+    const bookerBal = { ...(newBalances[r.bookerPubkey] || { points: 0, earned: 0, spent: 0 }) };
+    const hostBal = { ...(newBalances[r.hostPubkey] || { points: 0, earned: 0, spent: 0 }) };
+    if (isHost) {
+      bookerBal.points += r.feePoints;
+      bookerBal.earned += r.feePoints;
+      hostBal.points = Math.max(0, hostBal.points - hostShare);
+      newBalances[r.bookerPubkey] = bookerBal;
+      newBalances[r.hostPubkey] = hostBal;
+    } else {
+      const refund = Math.floor(r.feePoints * 0.5);
+      bookerBal.points += refund;
+      bookerBal.earned += refund;
+      const claw = Math.floor(hostShare * 0.6);
+      hostBal.points = Math.max(0, hostBal.points - claw);
+      newBalances[r.bookerPubkey] = bookerBal;
+      newBalances[r.hostPubkey] = hostBal;
+    }
+    const next = { ...reservations };
+    delete next[plotId];
+    set({ reservations: next, balances: newBalances });
+    get().pushEvent('system', `Booking cancelled on ${plotId}`);
+    get().persist();
+  },
+
   linkChargePointToPlot: (cpCode, plotId, meta = 3) => {
     const isNum = typeof meta === 'number';
     const powerKw = isNum ? meta : (meta.powerKw ?? 3);
@@ -180,11 +358,18 @@ export const useWorldStore = create((set, get) => ({
   },
 
   startSession: (plotId) => {
-    const { user, grid, sessions, balances } = get();
+    const { user, grid, sessions, balances, reservations } = get();
     if (!user) throw new Error('Connect a wallet');
     const plot = grid.find(p => p.id === plotId);
     if (!plot?.charger) throw new Error('No charger on this plot');
     if (sessions[plotId]) throw new Error('Session already active');
+    const now = Date.now();
+    const res = reservations[plotId];
+    const isOwner = plot.charger.owner === user.pubkey;
+    if (!isOwner) {
+      if (!res || res.untilMs < now) throw new Error('Book this spot first (or use your own node)');
+      if (res.bookerPubkey !== user.pubkey) throw new Error('This window is booked by another wallet');
+    }
     const rate = plot.charger.ratePerSec;
     if ((balances[user.pubkey]?.points || 0) < rate) throw new Error('Insufficient points to start');
     const newSessions = { ...sessions, [plotId]: { driver: user.pubkey, startTs: Date.now(), ratePerSec: rate } };
@@ -234,6 +419,30 @@ export const useWorldStore = create((set, get) => ({
     });
     if (changed) {
       set({ balances: newBalances });
+      get().persist();
+    }
+
+    const resAll = get().reservations;
+    const sess = get().sessions;
+    const now2 = Date.now();
+    let nextRes = resAll;
+    let resChanged = false;
+    const expiredPlots = [];
+    Object.entries(resAll).forEach(([pid, r]) => {
+      if (now2 > r.untilMs && !sess[pid]) {
+        if (!resChanged) {
+          nextRes = { ...resAll };
+          resChanged = true;
+        }
+        delete nextRes[pid];
+        expiredPlots.push(pid);
+      }
+    });
+    if (resChanged) {
+      set({ reservations: nextRes });
+      if (expiredPlots.length) {
+        get().pushEvent('system', `Booking window ended: ${expiredPlots.join(', ')}`);
+      }
       get().persist();
     }
   },

@@ -10,6 +10,7 @@ export function OpenApiPanel({ compact = false }) {
   const sessions = useWorldStore(s => s.sessions);
   const cpToPlot = useWorldStore(s => s.cpToPlot);
   const cpMeta = useWorldStore(s => s.cpMeta);
+  const reservations = useWorldStore(s => s.reservations);
   const user = useWorldStore(s => s.user);
 
   const base = typeof window !== 'undefined' ? window.location.origin : '';
@@ -29,20 +30,30 @@ export function OpenApiPanel({ compact = false }) {
         .map(p => {
           const code = plotToCatalogCode[p.id] || null;
           const meta = code ? cpMeta[code] : null;
+          const res = reservations[p.id];
+          const list = p.listing;
           return {
             plot_id: p.id,
             catalog_code: code,
             category: meta?.category ?? null,
-            category_label: meta?.category_label ?? null,
-            vertical: meta?.vertical ?? null,
-            listed_name: meta?.name ?? null,
+            category_label: list?.category_label ?? meta?.category_label ?? null,
+            vertical: list?.vertical ?? meta?.vertical ?? null,
+            listed_name: list?.name ?? meta?.name ?? null,
+            power_kw: list?.powerKw ?? meta?.powerKw ?? null,
             owner: p.charger.owner,
             rate_per_sec: p.charger.ratePerSec,
             solana_anchor: p.charger.solanaAnchor || null,
             session_active: Boolean(sessions[p.id]),
+            booking: res
+              ? {
+                  until_ms: res.untilMs,
+                  booker: `${res.bookerPubkey.slice(0, 6)}…${res.bookerPubkey.slice(-4)}`,
+                  fee_points: res.feePoints,
+                }
+              : null,
           };
         }),
-    [grid, sessions, plotToCatalogCode, cpMeta],
+    [grid, sessions, plotToCatalogCode, cpMeta, reservations],
   );
 
   const sessionPayload = useMemo(() => {

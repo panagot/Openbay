@@ -9,27 +9,60 @@ function PlotCell({
   onStart,
   onStop,
   onRegisterSolana,
+  onReserve,
+  onCancelReservation,
+  onRemoveCharger,
+  onReleaseLand,
   isActive,
   user,
   solanaLoading,
+  reservation,
 }) {
   const ownerShort = plot.owner ? `${plot.owner.slice(0, 4)}…${plot.owner.slice(-4)}` : null;
   const hasCharger = plot.charger;
   const needsSolana =
     hasCharger && !plot.charger?.solanaAnchor && plot.charger?.owner === user?.pubkey;
   const isRegistering = solanaLoading === plot.id;
+  const now = Date.now();
+  const resActive = reservation && reservation.untilMs > now;
+  const isChargerOwner = Boolean(user && hasCharger && plot.charger.owner === user.pubkey);
+  const isPlotOwner = Boolean(user && plot.owner === user.pubkey);
+  const isOthersNode = Boolean(user && hasCharger && plot.charger.owner !== user.pubkey);
+  const isBooker = Boolean(resActive && user && reservation.bookerPubkey === user.pubkey);
+  const canStartSession =
+    hasCharger &&
+    user &&
+    (isChargerOwner || (resActive && reservation.bookerPubkey === user.pubkey));
+
   return (
     <div
-      className={['cell', plot.owner ? 'owned' : 'unowned', hasCharger ? 'has-charger' : '', isActive ? 'active' : '']
+      className={[
+        'cell',
+        plot.owner ? 'owned' : 'unowned',
+        hasCharger ? 'has-charger' : '',
+        isActive ? 'active' : '',
+        resActive ? 'has-booking' : '',
+      ]
         .filter(Boolean)
         .join(' ')}
     >
       <div className="coords">{plot.id}</div>
       {plot.owner && <div className="owner">{ownerShort}</div>}
+      {plot.listing?.name && <div className="cell-listing">{plot.listing.name}</div>}
       {hasCharger && (
         <div className="charger">
           <span className="cell-rate">{plot.charger.ratePerSec}/s</span>{' '}
           {plot.charger.solanaAnchor && <span className="solana-badge">SOL</span>}
+        </div>
+      )}
+      {resActive && (
+        <div className="cell-booking-meta">
+          {isBooker ? (
+            <span className="cell-booking-you">Your booking</span>
+          ) : (
+            <span className="cell-booking-busy">Reserved</span>
+          )}
+          <span className="cell-booking-time">{new Date(reservation.untilMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
       )}
       <div className="actions">
@@ -39,10 +72,40 @@ function PlotCell({
             Deploy node (100)
           </button>
         )}
-        {hasCharger && !isActive && <button onClick={() => onStart(plot.id)}>Charge</button>}
+        {isOthersNode && user && !isActive && !resActive && (
+          <div className="cell-book-row">
+            <span className="cell-book-label">Book</span>
+            {[15, 30, 60].map(m => (
+              <button key={m} type="button" className="tiny secondary" onClick={() => onReserve(plot.id, m)}>
+                {m}m
+              </button>
+            ))}
+          </div>
+        )}
+        {isBooker && !isActive && (
+          <button type="button" className="secondary tiny" onClick={() => onCancelReservation(plot.id)}>
+            Cancel booking
+          </button>
+        )}
+        {hasCharger && !isActive && canStartSession && <button onClick={() => onStart(plot.id)}>Charge</button>}
         {isActive && (
           <button className="secondary" onClick={() => onStop(plot.id)}>
             Stop
+          </button>
+        )}
+        {isPlotOwner && hasCharger && !isActive && (
+          <button
+            type="button"
+            className="secondary tiny"
+            onClick={() => onRemoveCharger(plot.id)}
+            title="Undeploy node (~70% stake back)"
+          >
+            Remove node
+          </button>
+        )}
+        {isPlotOwner && !hasCharger && (
+          <button type="button" className="secondary tiny" onClick={() => onReleaseLand(plot.id)} title="Release empty plot">
+            Release land
           </button>
         )}
         {needsSolana && (
@@ -69,12 +132,17 @@ export function MapGrid() {
   const rows = useWorldStore(s => s.rows);
   const cols = useWorldStore(s => s.cols);
   const sessions = useWorldStore(s => s.sessions);
+  const reservations = useWorldStore(s => s.reservations);
   const user = useWorldStore(s => s.user);
 
   const mintLand = useWorldStore(s => s.mintLand);
   const deployCharger = useWorldStore(s => s.deployCharger);
   const startSession = useWorldStore(s => s.startSession);
   const stopSession = useWorldStore(s => s.stopSession);
+  const reserveSpot = useWorldStore(s => s.reserveSpot);
+  const cancelReservation = useWorldStore(s => s.cancelReservation);
+  const removeCharger = useWorldStore(s => s.removeCharger);
+  const releaseLand = useWorldStore(s => s.releaseLand);
   const updateChargerSolanaAnchor = useWorldStore(s => s.updateChargerSolanaAnchor);
   const pushEvent = useWorldStore(s => s.pushEvent);
 
@@ -85,6 +153,48 @@ export function MapGrid() {
     setError('');
     try {
       await fn(plotId);
+    } catch (e) {
+      setError(e.message);
+      pushEvent('error', e.message);
+    }
+  };
+
+  const handleReserve = (plotId, durationMins) => {
+    setError('');
+    try {
+      reserveSpot(plotId, durationMins);
+    } catch (e) {
+      setError(e.message);
+      pushEvent('error', e.message);
+    }
+  };
+
+  const handleCancelReservation = plotId => {
+    setError('');
+    try {
+      cancelReservation(plotId);
+    } catch (e) {
+      setError(e.message);
+      pushEvent('error', e.message);
+    }
+  };
+
+  const handleRemoveCharger = plotId => {
+    if (!window.confirm(`Remove node on ${plotId}?`)) return;
+    setError('');
+    try {
+      removeCharger(plotId);
+    } catch (e) {
+      setError(e.message);
+      pushEvent('error', e.message);
+    }
+  };
+
+  const handleReleaseLand = plotId => {
+    if (!window.confirm(`Release land ${plotId}?`)) return;
+    setError('');
+    try {
+      releaseLand(plotId);
     } catch (e) {
       setError(e.message);
       pushEvent('error', e.message);
@@ -132,13 +242,14 @@ export function MapGrid() {
         <div className="workspace-panel__intro">
           <h3 className="workspace-panel__title">Slot grid</h3>
           <p className="workspace-panel__meta">
-            {rows}×{cols} cells · mint, deploy, simulate sessions
+            {rows}×{cols} cells · mint, deploy, book, simulate sessions
           </p>
         </div>
         <div className="legend legend--inline" aria-label="Legend">
           <span className="badge owned">Owned</span>
           <span className="badge has-charger">Node</span>
           <span className="badge active">Active</span>
+          <span className="badge booking-legend">Booked window</span>
           <span className="badge solana-legend">Anchored</span>
         </div>
       </header>
@@ -153,8 +264,13 @@ export function MapGrid() {
             onStart={handle(startSession)}
             onStop={handle(stopSession)}
             onRegisterSolana={handleRegisterSolana}
+            onReserve={handleReserve}
+            onCancelReservation={handleCancelReservation}
+            onRemoveCharger={handleRemoveCharger}
+            onReleaseLand={handleReleaseLand}
             isActive={!!sessions[plot.id]}
             solanaLoading={solanaLoading}
+            reservation={reservations[plot.id]}
           />
         ))}
       </div>
