@@ -4,6 +4,7 @@ import { OpenApiPanel } from '../components/OpenApiPanel.jsx';
 import { HardwareApiPanel } from '../components/HardwareApiPanel.jsx';
 import { WebhookGuidePanel } from '../components/WebhookGuidePanel.jsx';
 import { PersonaToggle } from '../components/PersonaToggle.jsx';
+import { SandboxModeStrip } from '../components/SandboxModeStrip.jsx';
 import { usePersona } from '../context/PersonaContext.jsx';
 
 export function ApiLab() {
@@ -24,6 +25,7 @@ export function ApiLab() {
           </Link>
         </div>
       </header>
+      <SandboxModeStrip compact />
       {persona === 'host' && (
         <div className="api-lab-host-banner" role="status">
           <strong>Host view</strong> — you are in simplified mode. Switch to <strong>OEM / integrator</strong> for the full

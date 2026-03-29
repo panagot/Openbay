@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { useWorldStore } from '../state/store.js';
 import { paths } from '../constants/apiSurface.js';
 
+const OPENAPI_STUB_RAW =
+  'https://raw.githubusercontent.com/panagot/Openbay/master/docs/openapi-openbay-stub.yaml';
+
 export function OpenApiPanel({ compact = false }) {
   const [tab, setTab] = useState('stations');
   const [copyState, setCopyState] = useState(null);
@@ -121,6 +124,18 @@ export function OpenApiPanel({ compact = false }) {
         <strong>browser-only mock</strong> (stable schema). Production will use <strong>separate sandbox vs live API keys</strong>{' '}
         and server-side validation; nothing here enforces auth or idempotency.
       </p>
+      <div className="openapi-spec-row">
+        <span className="sandbox-strip-badge openapi-mock-pill">Mock export</span>
+        <a
+          className="openapi-spec-link"
+          href={OPENAPI_STUB_RAW}
+          target="_blank"
+          rel="noreferrer"
+          download="openapi-openbay-stub.yaml"
+        >
+          OpenAPI stub (YAML) — repo
+        </a>
+      </div>
       {!compact && (
         <div className="openapi-tabs">
           <button type="button" className={tab === 'stations' ? 'active' : ''} onClick={() => setTab('stations')}>

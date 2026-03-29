@@ -17,6 +17,7 @@ import { OnboardingToast } from './components/OnboardingToast.jsx';
 import { OpenApiPanel } from './components/OpenApiPanel.jsx';
 import { HardwareApiPanel } from './components/HardwareApiPanel.jsx';
 import { PersonaToggle } from './components/PersonaToggle.jsx';
+import { SandboxModeStrip } from './components/SandboxModeStrip.jsx';
 import { usePersona } from './context/PersonaContext.jsx';
 
 function AppInner() {
@@ -24,42 +25,75 @@ function AppInner() {
   const [view, setView] = React.useState(() => {
     try { return localStorage.getItem('vdw_view') || 'map'; } catch { return 'map'; }
   });
+  const [heroIntroOpen, setHeroIntroOpen] = React.useState(() => {
+    try { return localStorage.getItem('vdw_hero_intro_open') === '1'; } catch { return false; }
+  });
   React.useEffect(() => { try { localStorage.setItem('vdw_view', view); } catch {} }, [view]);
+  React.useEffect(() => {
+    try {
+      localStorage.setItem('vdw_hero_intro_open', heroIntroOpen ? '1' : '0');
+    } catch {}
+  }, [heroIntroOpen]);
   return (
     <div className="app">
       <WalletBar />
+      <SandboxModeStrip />
       <StatsHeader />
-      <RecentEvents />
-      <main className="layout">
-        <section className="left">
-          <div className="hero hero-surface">
-            <div className="hero-top-row">
+      <div className="recent-sandbox-stack">
+        <RecentEvents
+          trailing={
+            <div className="hero-compact-bar hero-compact-bar--in-strip">
               <div className="hero-kicker">Sandbox · v0.1</div>
               <PersonaToggle idPrefix="home" />
+              <button
+                type="button"
+                className="secondary hero-intro-btn"
+                aria-expanded={heroIntroOpen}
+                aria-controls="hero-intro-panel"
+                id="hero-intro-toggle"
+                onClick={() => setHeroIntroOpen(o => !o)}
+              >
+                {heroIntroOpen ? 'Hide intro' : 'About this sandbox'}
+              </button>
             </div>
-            <h2>Multi-vertical host operations</h2>
-            {persona === 'host' ? (
-              <p className="subtitle">
-                Run your <strong>slot grid</strong>, spawn sites from the <strong>map catalog</strong>, and simulate{' '}
-                <strong>POINTS</strong> sessions. Phantom is optional for signing a station anchor. Building hardware or
-                fleet software? Switch to <strong>OEM / integrator</strong> for API &amp; webhook docs.
-              </p>
-            ) : (
-              <p className="subtitle">
-                Model EV, flex energy, micromobility, and edge nodes on a slot grid and map. OEMs and gateways target the
-                same discovery + session JSON this browser exports—register devices, post telemetry, expose{' '}
-                <code className="hero-inline-code">GET /api/v1/stations</code> to fleets (hosted API is roadmap; see{' '}
-                <Link to="/lab">API Lab</Link>).
-              </p>
-            )}
-            <p className="hero-footnote">
-              <Link to="/about">Product &amp; wallets</Link>
-              <span className="hero-footnote-sep" aria-hidden>
-                ·
-              </span>
-              Solana Pay &amp; live backend are roadmap items.
+          }
+        />
+        <div
+          id="hero-intro-panel"
+          className="hero-intro-drawer hero-surface"
+          role="region"
+          aria-labelledby="hero-intro-toggle"
+          hidden={!heroIntroOpen}
+        >
+          <h2>Multi-vertical host operations</h2>
+          <p className="hero-tagline">
+            Turn parking, power, and edge hardware into bookable infrastructure — explore it here as a browser sandbox.
+          </p>
+          {persona === 'host' ? (
+            <p className="subtitle">
+              Run your <strong>slot grid</strong>, spawn sites from the <strong>map catalog</strong>, and simulate{' '}
+              <strong>POINTS</strong> sessions. Phantom is optional for signing a station anchor. Building hardware or fleet
+              software? Switch to <strong>OEM / integrator</strong> for API &amp; webhook docs.
             </p>
-          </div>
+          ) : (
+            <p className="subtitle">
+              Model EV, flex energy, micromobility, and edge nodes on a slot grid and map. OEMs and gateways target the same
+              discovery + session JSON this browser exports—register devices, post telemetry, expose{' '}
+              <code className="hero-inline-code">GET /api/v1/stations</code> to fleets (hosted API is roadmap; see{' '}
+              <Link to="/lab">API Lab</Link>).
+            </p>
+          )}
+          <p className="hero-footnote">
+            <Link to="/about">Product &amp; wallets</Link>
+            <span className="hero-footnote-sep" aria-hidden>
+              ·
+            </span>
+            Solana Pay &amp; live backend are roadmap items.
+          </p>
+        </div>
+      </div>
+      <main className="layout">
+        <section className="left">
           <div className="view-toggle-wrap">
             <div className="view-toggle-row">
               <span className="view-toggle-label" id="workspace-label">
